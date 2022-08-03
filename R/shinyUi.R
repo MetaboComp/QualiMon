@@ -12,7 +12,7 @@ ui<-dashboardPage(
   dashboardHeader(title="QualiMon"),
 
   dashboardSidebar(
-    shinydashboard::sidebarMenu(
+    sidebarMenu(
       menuItem("Tutorial", tabName="tutorial", icon=icon("book")),
       menuItem("Setup", tabName="setup", icon=icon("desktop"), startExpanded=F,
                menuSubItem("Find LaMas & New DB", tabName="findLamas", icon=icon("search")),
