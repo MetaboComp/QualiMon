@@ -37,4 +37,5 @@ Depends:
     MSnbase,
     IPO,
     fontawesome
+Remotes: krispir/cpc
 RoxygenNote: 7.2.1
