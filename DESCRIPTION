@@ -12,7 +12,6 @@ LazyData: true
 biocViews:
 Depends:
     shiny,
-    shinydashboard,
     shinydashboardPlus,
     RSQLite,
     DBI,

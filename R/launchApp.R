@@ -1,6 +1,6 @@
 #' launchApp - Function for running QualiMon
 #'
-#' @import shiny shinydashboard shinydashboardPlus RSQLite DBI stringr stringi plotly shinyFiles data.table future openxlsx slackr promises cpc heatmaply magrittr ipc fontawesome
+#' @import shiny shinydashboardPlus RSQLite DBI stringr stringi plotly shinyFiles data.table future openxlsx slackr promises cpc heatmaply magrittr ipc fontawesome
 #'
 #' @importFrom shinyWidgets awesomeCheckbox prettySwitch pickerInput updatePickerInput
 #' @importFrom stats complete.cases cor dnorm loess predict pt qt sd
