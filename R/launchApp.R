@@ -2,7 +2,7 @@
 #'
 #' @import shiny shinydashboardPlus RSQLite DBI stringr stringi plotly shinyFiles data.table future openxlsx slackr promises cpc heatmaply magrittr ipc fontawesome
 #'
-#' @importFrom shinydashboard sidebarMenu menuItem menuSubItem tabBox tabItems tabItem
+#' @importFrom shinydashboard sidebarMenu menuItem menuSubItem tabBox tabItems tabItem dashboardBody renderInfoBox valueBox valueBoxOutput
 #' @importFrom shinyWidgets awesomeCheckbox prettySwitch pickerInput updatePickerInput
 #' @importFrom stats complete.cases cor dnorm loess predict pt qt sd
 #' @importFrom utils read.csv2 read.table write.table
