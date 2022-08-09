@@ -433,7 +433,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusInt==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if (LM_Int_outlier_n_div_nLM > SoftLimIntProp || is.nan(LM_Int_outlier_n_div_nLM)){
           Status <- Status + 1
@@ -468,7 +468,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of retention time outliers are higher than set limits
       if (Config$statusRT==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if (LM_rt_outlier_n_div_nLM > SoftLimRtProp || is.nan(LM_rt_outlier_n_div_nLM)){
           Status <- Status + 1
@@ -499,7 +499,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusHeight==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if (LM_Height_outlier_n_div_nLM > SoftLimHeightProp || is.nan(LM_Height_outlier_n_div_nLM)){
           Status <- Status + 1
@@ -530,7 +530,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusFWHM==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if (LM_FWHM_outlier_n_div_nLM > SoftLimFWHMProp || is.nan(LM_FWHM_outlier_n_div_nLM)){
           Status <- Status + 1
@@ -561,7 +561,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusTF==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if(LM_TF_outlier_n_div_nLM > SoftLimTFProp || is.nan(LM_TF_outlier_n_div_nLM)){
           Status <- Status + 1
@@ -592,7 +592,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusSN==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if (LM_SN_outlier_n_div_nLM > SoftLimSNProp || is.nan(LM_SN_outlier_n_div_nLM)){
           Status <- Status + 1
@@ -623,7 +623,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusNoise==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if (LM_NOISE_outlier_n_div_nLM > SoftLimNoiseProp || is.nan(LM_NOISE_outlier_n_div_nLM)){
           Status <- Status + 1
@@ -654,7 +654,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusDataPoints==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if(LM_DataPoints_outlier_n_div_nLM > SoftLimIntProp || is.nan(LM_DataPoints_outlier_n_div_nLM)){
           Status <- Status + 1
@@ -676,7 +676,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       LM_n_p = (LM_n_z>t_Crit1Tail)
       #Checking if proportion of retention time outliers are higher than set limits
       if (Config$statusnLM==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if (LM_numbers < SoftLimnLMs){
           Status <- Status + 1
@@ -695,7 +695,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       LM_IPO_p = (LM_IPO_z>t_Crit2Tail)
       #Checking if proportion of retention time outliers are higher than set limits
       if (Config$statusIPO==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if(LM_IPO_score_ref < SoftLimIPO){
           Status <- Status + 1
@@ -713,7 +713,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       Peak_number_p = (Peak_number_z>t_Crit2Tail)
 
       if (Config$statusNPeaks==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if(LM_nPeaks_ref < SoftLimnPeaks){
           Status <- Status + 1
@@ -731,7 +731,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       LM_TIC_p = (LM_TIC_z>t_Crit2Tail)
       #Checking if proportion of retention time outliers are higher than set limits
       if (Config$statusTIC==T){
-        testsMade = testsMade+3
+        testsMade = testsMade+4
 
         if(LM_TIC_ref < SoftLimTIC){
           Status <- Status + 1
@@ -744,18 +744,19 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
 
       #### Summing up all the statuses ####
       Status<-sum(Status,
-                  LM_Int_outlier_p,
-                  LM_rt_outlier_p,
-                  LM_Height_outlier_p,
-                  LM_FWHM_outlier_p,
-                  LM_TF_outlier_p,
-                  LM_SN_outlier_p,
-                  LM_NOISE_outlier_p,
-                  LM_DataPoints_outlier_p,
-                  LM_n_p,
-                  LM_IPO_p,
-                  Peak_number_p,
-                  LM_TIC_p, na.rm=TRUE) / testsMade
+                  ifelse(Config$statusInt==1, LM_Int_outlier_p, 0),
+                  ifelse(Config$statusRT==1, LM_rt_outlier_p, 0),
+                  ifelse(Config$statusHeight==1, LM_Height_outlier_p, 0),
+                  ifelse(Config$statusFWHM==1, LM_FWHM_outlier_p, 0),
+                  ifelse(Config$statusTF==1, LM_TF_outlier_p, 0),
+                  ifelse(Config$statusSN==1, LM_SN_outlier_p, 0),
+                  ifelse(Config$statusNoise==1, LM_NOISE_outlier_p, 0),
+                  ifelse(Config$statusDataPoints==1, LM_DataPoints_outlier_p, 0),
+                  ifelse(Config$statusnLM==1, LM_n_p, 0),
+                  ifelse(Config$statusIPO==1, LM_IPO_p, 0),
+                  ifelse(Config$statusNPeaks==1, Peak_number_p, 0),
+                  ifelse(Config$statusTIC==1, LM_TIC_p, 0),
+                  na.rm=TRUE) / testsMade
 
       ######################################################################
       ##### Report generation and abnormal/normal determination section ####

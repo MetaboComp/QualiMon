@@ -39,7 +39,7 @@ configWizServer<-function(id,r){
       output$render0<-renderUI({
           box(
             width=3,
-            title="Step 1/14",
+            title="Step 1/13",
 
             div(style = "height:110px;",
               tags$b("Choose the folder where the instrument will generate raw files:"),
