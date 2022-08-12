@@ -234,7 +234,9 @@ findLamasServer<-function(id,r){
                          tags$br(),
                          tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[1]][4],0))),
                          tags$br(),
-                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[1]])))
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[1]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[1]][5])
                        )
                      }
                    )
@@ -256,7 +258,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[2]][4],0))),
                        tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[2]])))
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[2]]))),
+                       tags$br(),
+                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[2]][5])
                      )
                      }
                    )
@@ -278,7 +282,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[3]][4],0))),
                        tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[3]])))
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[3]]))),
+                       tags$br(),
+                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[3]][5])
                      )
                      }
                    )
@@ -300,7 +306,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[4]][4],0))),
                        tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[4]])))
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[4]]))),
+                       tags$br(),
+                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[4]][5])
                      )
                      }
                    )
@@ -322,7 +330,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[5]][4],0))),
                        tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[5]])))
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[5]]))),
+                       tags$br(),
+                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[5]][5])
                      )
                      }
                    )
@@ -344,7 +354,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[6]][4],0))),
                        tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[6]])))
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[6]]))),
+                       tags$br(),
+                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[6]][5])
                      )
                      }
                    )
@@ -366,7 +378,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[7]][4],0))),
                        tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[7]])))
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[7]]))),
+                       tags$br(),
+                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[7]][5])
                      )
                      }
                    )
@@ -388,7 +402,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[8]][4],0))),
                        tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[8]])))
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[8]]))),
+                       tags$br(),
+                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[8]][5])
                      )
                      }
                    )
@@ -410,7 +426,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[9]][4],0))),
                        tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[9]])))
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[9]]))),
+                       tags$br(),
+                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[9]][5])
                      )
                      }
                    )
@@ -432,7 +450,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[10]][4],0))),
                        tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[10]])))
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[10]]))),
+                       tags$br(),
+                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[10]][5])
                      )
                      }
                    )

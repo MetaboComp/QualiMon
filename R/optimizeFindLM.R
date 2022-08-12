@@ -45,26 +45,27 @@ optimizeFindLM <- function(preFCPfilepath, split='@', minrttocheck=40, Prefilter
   testobjfun <- apply(Scaledmatr, 1, sum)
   sortedscore  <- sort(testobjfun, decreasing=T)
   sortedscore <- as.numeric(names(sortedscore)[1:10])
+  sortedCoverage <- order(testobjfun, decreasing=T)
   rank1 <- foundLMs[[sortedscore[1]]]
-  rank1settings <- cbind(Des[sortedscore[1],], Coverage[sortedscore[1]])
+  rank1settings <- cbind(Des[sortedscore[1],], Coverage[sortedCoverage[1]])
   rank2 <- foundLMs[[sortedscore[2]]]
-  rank2settings <- cbind(Des[sortedscore[2],], Coverage[sortedscore[2]])
+  rank2settings <- cbind(Des[sortedCoverage[2],], Coverage[sortedCoverage[2]])
   rank3 <- foundLMs[[sortedscore[3]]]
-  rank3settings <- cbind(Des[sortedscore[3],], Coverage[sortedscore[3]])
+  rank3settings <- cbind(Des[sortedscore[3],], Coverage[sortedCoverage[3]])
   rank4 <- foundLMs[[sortedscore[4]]]
-  rank4settings <- cbind(Des[sortedscore[4],], Coverage[sortedscore[4]])
+  rank4settings <- cbind(Des[sortedscore[4],], Coverage[sortedCoverage[4]])
   rank5 <- foundLMs[[sortedscore[5]]]
-  rank5settings <- cbind(Des[sortedscore[5],], Coverage[sortedscore[5]])
+  rank5settings <- cbind(Des[sortedscore[5],], Coverage[sortedCoverage[5]])
   rank6 <- foundLMs[[sortedscore[6]]]
-  rank6settings <- cbind(Des[sortedscore[6],], Coverage[sortedscore[6]])
+  rank6settings <- cbind(Des[sortedscore[6],], Coverage[sortedCoverage[6]])
   rank7 <- foundLMs[[sortedscore[7]]]
-  rank7settings <- cbind(Des[sortedscore[7],], Coverage[sortedscore[7]])
+  rank7settings <- cbind(Des[sortedscore[7],], Coverage[sortedCoverage[7]])
   rank8 <- foundLMs[[sortedscore[8]]]
-  rank8settings <- cbind(Des[sortedscore[8],], Coverage[sortedscore[8]])
+  rank8settings <- cbind(Des[sortedscore[8],], Coverage[sortedCoverage[8]])
   rank9 <- foundLMs[[sortedscore[9]]]
-  rank9settings <- cbind(Des[sortedscore[9],], Coverage[sortedscore[9]])
+  rank9settings <- cbind(Des[sortedscore[9],], Coverage[sortedCoverage[9]])
   rank10 <- foundLMs[[sortedscore[10]]]
-  rank10settings <- cbind(Des[sortedscore[10],], Coverage[sortedscore[10]])
+  rank10settings <- cbind(Des[sortedscore[10],], Coverage[sortedCoverage[10]])
   LMs <- list(rank1, rank2, rank3, rank4, rank5, rank6, rank7, rank8, rank9, rank10)
   Settings <- list(rank1settings, rank2settings, rank3settings, rank4settings, rank5settings, rank6settings, rank7settings, rank8settings, rank9settings, rank10settings)
   Out <- list(LMs, Settings, mode)
