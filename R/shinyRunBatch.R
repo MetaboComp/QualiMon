@@ -202,8 +202,8 @@ runBatchServer<-function(id,r){
                   progressBatchRun$close()
                   showModal(
                     modalDialog(
-                      title="!!Error!!",
-                      paste0("An error occured: ",err),
+                      title="Problems with config file",
+                      paste0("Make sure a correctly formated config file has been selected and that the DB file referenced by it is existing!"),
                       easyClose=F
                     )
                   )

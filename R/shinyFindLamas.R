@@ -68,6 +68,17 @@ findLamasUI<-function(id){
         ),
         fluidRow(
           column(
+            width=4,
+            sliderInput(inputId=ns("minMaxLamas"), "Min. and max n LaMas to find",
+                        min = 10, max = 300,
+                        value = c(100,200))
+          ),
+          column(
+            width=8
+          )
+        ),
+        fluidRow(
+          column(
             width=6
           ),
           column(
@@ -132,7 +143,7 @@ findLamasServer<-function(id,r){
       ###############################
       #### Server side rendering ####
       ###############################
-      #RDS description and feedback
+      ####RDS description and feedback####
       output$rdsDescription <- renderUI({
         if(is.null(r$findLamas$preFCPfilepath)){
           tags$b("Choose .rds object containing xcms RT adj. object")
@@ -143,7 +154,7 @@ findLamasServer<-function(id,r){
       })
 
 
-      #Button for finding new LaMas
+      ####Button for finding new LaMas####
       output$runButton <- renderUI({
         req(r$findLamas$preFCPfilepath)
         req(r$findLamas$split)
@@ -221,7 +232,9 @@ findLamasServer<-function(id,r){
                          tags$br(),
                          tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[1]][3],0))),
                          tags$br(),
-                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[1]][4],0)))
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[1]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[1]])))
                        )
                      }
                    )
@@ -241,7 +254,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[2]][3],0))),
                        tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[2]][4],0)))
+                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[2]][4],0))),
+                       tags$br(),
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[2]])))
                      )
                      }
                    )
@@ -261,7 +276,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[3]][3],0))),
                        tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[3]][4],0)))
+                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[3]][4],0))),
+                       tags$br(),
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[3]])))
                      )
                      }
                    )
@@ -281,7 +298,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[4]][3],0))),
                        tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[4]][4],0)))
+                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[4]][4],0))),
+                       tags$br(),
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[4]])))
                      )
                      }
                    )
@@ -301,7 +320,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[5]][3],0))),
                        tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[5]][4],0)))
+                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[5]][4],0))),
+                       tags$br(),
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[5]])))
                      )
                      }
                    )
@@ -321,7 +342,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[6]][3],0))),
                        tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[6]][4],0)))
+                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[6]][4],0))),
+                       tags$br(),
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[6]])))
                      )
                      }
                    )
@@ -341,7 +364,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[7]][3],0))),
                        tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[7]][4],0)))
+                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[7]][4],0))),
+                       tags$br(),
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[7]])))
                      )
                      }
                    )
@@ -361,7 +386,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[8]][3],0))),
                        tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[8]][4],0)))
+                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[8]][4],0))),
+                       tags$br(),
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[8]])))
                      )
                      }
                    )
@@ -381,7 +408,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[9]][3],0))),
                        tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[9]][4],0)))
+                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[9]][4],0))),
+                       tags$br(),
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[9]])))
                      )
                      }
                    )
@@ -401,7 +430,9 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[10]][3],0))),
                        tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[10]][4],0)))
+                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[10]][4],0))),
+                       tags$br(),
+                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[10]])))
                      )
                      }
                    )
@@ -633,8 +664,6 @@ findLamasServer<-function(id,r){
               landmarks[,4] <- rep(r$findLamas$outObj[[3]],nrow(r$findLamas$outObj[[1]][[as.double(r$findLamas$lamaSetToSubmit)]]))
               landmarks[,5] <- paste0(landmarks[,2],"_",landmarks[,3])
 
-              print(landmarks)
-
               submitLMToDB(r$findLamas$dbSubmitLamasTo, landmarks)
 
               r$findLamas$submitLamas <- 1
@@ -707,6 +736,17 @@ findLamasServer<-function(id,r){
         }
       )
 
+      #Get range of min and max LaMas to use for optimization
+      observeEvent(
+        ignoreNULL=TRUE,
+        eventExpr={
+          input$minMaxLamas
+        },
+        handlerExpr={
+          r$findLamas$minMaxLamas <- input$minMaxLamas
+        }
+      )
+
       #Start optimization through use of action button
       observeEvent(
         ignoreNULL=TRUE,
@@ -720,7 +760,13 @@ findLamasServer<-function(id,r){
           withProgress(
             value=0,
             message="Optimizing LaMas",
-            r$findLamas$outObj <- optimizeFindLM(r$findLamas$preFCPfilepath, r$findLamas$split, r$findLamas$minRTcheck, r$findLamas$preFilterIntensity, r$findLamas$chromPol)
+            r$findLamas$outObj <- optimizeFindLM(r$findLamas$preFCPfilepath,
+                                                 r$findLamas$split,
+                                                 r$findLamas$minRTcheck,
+                                                 r$findLamas$preFilterIntensity,
+                                                 r$findLamas$chromPol,
+                                                 r$findLamas$minMaxLamas[1],
+                                                 r$findLamas$minMaxLamas[2])
           )
           showNotification("Optimization of LaMas completed.")
         }

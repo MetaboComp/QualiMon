@@ -6,6 +6,8 @@
 #' @param sampType The type of injections of interest, "sQC" or "sample"
 #'
 #' @return Returning data frame of LaMa data from all samples fulfilling filters
+#'
+#' @export fetchLMFeatureTable
 
 
 fetchLMFeatureTable <- function(dbName="NameOfDB.db", chromPol, projName, sampType){

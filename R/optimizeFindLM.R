@@ -8,7 +8,7 @@
 #'
 #' @return Returning 10 sets of optimized LaMas and the final parameters
 
-optimizeFindLM <- function(preFCPfilepath, split='@', minrttocheck=40, Prefilterintensity, mode){
+optimizeFindLM <- function(preFCPfilepath, split='@', minrttocheck=40, Prefilterintensity, mode, minLM=100, maxLM=200){
   PT_NoFill <- readRDS(preFCPfilepath)
   preFCPnames <- colnames(PT_NoFill)
   splitnames <- strsplit(preFCPnames, split=split)
@@ -22,8 +22,6 @@ optimizeFindLM <- function(preFCPfilepath, split='@', minrttocheck=40, Prefilter
   allowedmissingness <- c(0.25, 0.20, 0.15, 0.1, 0.05, 0.01)
   mzdiff <- seq(from=0.1, to=1, by=0.1)
   rtdiff <- seq(from=runTime/36, to=runTime/18, length.out=8)
-  minLM <- 100
-  maxLM <- 200
   Des <- expand.grid(minIntensity, allowedmissingness, mzdiff, rtdiff)
   colnames(Des) <- c("minIntensity", "allowedmissingness", "mzdiff", "rtdiff")
   foundLMs <- list()
@@ -33,7 +31,7 @@ optimizeFindLM <- function(preFCPfilepath, split='@', minrttocheck=40, Prefilter
   }
 
   nLMvec <- sapply(foundLMs, FUN=nrow)
-  whcorrectnLM <- which(nLMvec<200 & nLMvec>100)
+  whcorrectnLM <- which(nLMvec<maxLM & nLMvec>minLM)
   Coverage <- vector()
   Settings <- Des[whcorrectnLM,]
   for (i in 1:length(whcorrectnLM)){
@@ -48,25 +46,25 @@ optimizeFindLM <- function(preFCPfilepath, split='@', minrttocheck=40, Prefilter
   sortedscore  <- sort(testobjfun, decreasing=T)
   sortedscore <- as.numeric(names(sortedscore)[1:10])
   rank1 <- foundLMs[[sortedscore[1]]]
-  rank1settings <- Des[sortedscore[1],]
+  rank1settings <- cbind(Des[sortedscore[1],], Coverage[sortedscore[1]])
   rank2 <- foundLMs[[sortedscore[2]]]
-  rank2settings <- Des[sortedscore[2],]
+  rank2settings <- cbind(Des[sortedscore[2],], Coverage[sortedscore[2]])
   rank3 <- foundLMs[[sortedscore[3]]]
-  rank3settings <- Des[sortedscore[3],]
+  rank3settings <- cbind(Des[sortedscore[3],], Coverage[sortedscore[3]])
   rank4 <- foundLMs[[sortedscore[4]]]
-  rank4settings <- Des[sortedscore[4],]
+  rank4settings <- cbind(Des[sortedscore[4],], Coverage[sortedscore[4]])
   rank5 <- foundLMs[[sortedscore[5]]]
-  rank5settings <- Des[sortedscore[5],]
+  rank5settings <- cbind(Des[sortedscore[5],], Coverage[sortedscore[5]])
   rank6 <- foundLMs[[sortedscore[6]]]
-  rank6settings <- Des[sortedscore[6],]
+  rank6settings <- cbind(Des[sortedscore[6],], Coverage[sortedscore[6]])
   rank7 <- foundLMs[[sortedscore[7]]]
-  rank7settings <- Des[sortedscore[7],]
+  rank7settings <- cbind(Des[sortedscore[7],], Coverage[sortedscore[7]])
   rank8 <- foundLMs[[sortedscore[8]]]
-  rank8settings <- Des[sortedscore[8],]
+  rank8settings <- cbind(Des[sortedscore[8],], Coverage[sortedscore[8]])
   rank9 <- foundLMs[[sortedscore[9]]]
-  rank9settings <- Des[sortedscore[9],]
+  rank9settings <- cbind(Des[sortedscore[9],], Coverage[sortedscore[9]])
   rank10 <- foundLMs[[sortedscore[10]]]
-  rank10settings <- Des[sortedscore[10],]
+  rank10settings <- cbind(Des[sortedscore[10],], Coverage[sortedscore[10]])
   LMs <- list(rank1, rank2, rank3, rank4, rank5, rank6, rank7, rank8, rank9, rank10)
   Settings <- list(rank1settings, rank2settings, rank3settings, rank4settings, rank5settings, rank6settings, rank7settings, rank8settings, rank9settings, rank10settings)
   Out <- list(LMs, Settings, mode)

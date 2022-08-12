@@ -4,6 +4,8 @@
 #' @param alpha Alpha value for significance
 #'
 #' @return Outliers for all samples tested
+#'
+#' @export
 
 calcOutliers <- function(Metric, alpha=0.01){
   #check For LaMas with too few hits
