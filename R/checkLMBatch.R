@@ -51,7 +51,6 @@ checkLMBatch<-function(fileDir, projName, cwp=NULL, Config, sumFiles, progressBa
       projSubmit <- projName
     }
 
-    test <- Sys.time()
     checkLM(filePath=paste0(fileDir,"\\",file),
             dbName=Config$dbName,
             projName=projSubmit,
@@ -63,10 +62,10 @@ checkLMBatch<-function(fileDir, projName, cwp=NULL, Config, sumFiles, progressBa
             noCheck=Config$noCheck,
             cwp=cwp,
             Config=Config,
-            slackOn=F)
+            slackOn=F,
+            batch=T)
     #Async progression update
-    # progressBatchRun$inc(1/sumFiles)
-    print(paste0(paste0(fileDir,"\\",file), ": ", Sys.time()-test))
+    progressBatchRun$inc(1/sumFiles)
   }
 
 

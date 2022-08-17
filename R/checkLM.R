@@ -16,7 +16,7 @@
 #' @return Nothing
 
 #The specific instrument could be logged if inputed by user!
-checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName="", sampleMatrix="", dPPM=10, rtWin=30, alpha = 0.01, noCheck=c("blank", "cond", "CP"), cwp=NULL, Config=Config, slackOn=F){
+checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName="", sampleMatrix="", dPPM=10, rtWin=30, alpha = 0.01, noCheck=c("blank", "cond", "CP"), cwp=NULL, Config=Config, slackOn=F, batch=F){
 
   #Extracting the file name from the filePath
   fileName<-basename(filePath)
@@ -133,11 +133,14 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   #### Ultimately stored in "PeakInfo"               ####
   #Trying to avoid XCMS bug
   #gc (reset = TRUE)
-  write.table("Running xcms & cpc on file...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+  if(!batch){
+    write.table("Running xcms & cpc on file...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+  }
+
 
   raw_data <- readMSData(files = filePath, mode = "onDisk") # Read in file -> MS
 
-  if(length(unique(raw_data@featureData@data$msLevel))==1 && unique(raw_data@featureData@data$msLevel)==2){
+  if(length(unique(raw_data@featureData@data$msLevel))==1 && unique(raw_data@featureData@data$msLevel)==2 && batch){
     write.table("File only containing MS2 data, performing no quality check", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
     return()
   }
@@ -300,7 +303,10 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   if(dim(H0Object$IPOnLM)[1]>1 && dim(H0Object$LMPeaks)[1]>1){
     ##############################################
     #### Building a 2D DF of landmark results ####
-    write.table("Performing quality tests...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+    if(!batch){
+      write.table("Performing quality tests...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+    }
+
     #Setting up LM_Ref
     LM_Ref<-list()
     LM_Ref$intensity<-matrix(NA,nrow=length(unique(H0Object$LMPeaks$injID)),ncol=nrow(landmarks))
@@ -388,7 +394,9 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
     # check_LM_info = data.frame(matrix(nrow = 1, ncol = 28))
 
     for(i in 1:(nrow(LM_Ref$intensity))){
-      write.table(paste0("Testing file ", LM_Ref$name[i],"..."), "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+      if(!batch){
+        write.table(paste0("Testing file ", LM_Ref$name[i],"..."), "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+      }
 
       #Setting up a new
       LM_Int <- LM_Ref$intensity[i,]
@@ -433,13 +441,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusInt==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if (LM_Int_outlier_n_div_nLM > SoftLimIntProp || is.nan(LM_Int_outlier_n_div_nLM)){
-          Status <- Status + 1
+        if(SoftLimIntProp!=0){
+          testsMade = testsMade+3
 
-          if (LM_Int_outlier_n_div_nLM > HardLimIntProp || is.nan(LM_Int_outlier_n_div_nLM)){
-            Status <- Status + 2
+          if (LM_Int_outlier_n_div_nLM > SoftLimIntProp || is.nan(LM_Int_outlier_n_div_nLM)){
+            Status <- Status + 1
+
+            if (LM_Int_outlier_n_div_nLM > HardLimIntProp || is.nan(LM_Int_outlier_n_div_nLM)){
+              Status <- Status + 2
+            }
           }
         }
       }
@@ -468,15 +480,21 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of retention time outliers are higher than set limits
       if (Config$statusRT==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if (LM_rt_outlier_n_div_nLM > SoftLimRtProp || is.nan(LM_rt_outlier_n_div_nLM)){
-          Status <- Status + 1
+        if(SoftLimRtProp!=0){
+          testsMade = testsMade+3
 
-          if (LM_rt_outlier_n_div_nLM > HardLimRtProp || is.nan(LM_rt_outlier_n_div_nLM)){
-            Status <- Status + 2
+          if (LM_rt_outlier_n_div_nLM > SoftLimRtProp || is.nan(LM_rt_outlier_n_div_nLM)){
+            Status <- Status + 1
+
+            if (LM_rt_outlier_n_div_nLM > HardLimRtProp || is.nan(LM_rt_outlier_n_div_nLM)){
+              Status <- Status + 2
+            }
           }
         }
+
+
       }
 
       #### For height ####
@@ -499,15 +517,21 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusHeight==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if (LM_Height_outlier_n_div_nLM > SoftLimHeightProp || is.nan(LM_Height_outlier_n_div_nLM)){
-          Status <- Status + 1
+        if(SoftLimHeightProp != 0){
+          testsMade = testsMade+3
 
-          if (LM_Height_outlier_n_div_nLM > HardLimHeightProp || is.nan(LM_Height_outlier_n_div_nLM)){
-            Status <- Status + 2
+          if (LM_Height_outlier_n_div_nLM > SoftLimHeightProp || is.nan(LM_Height_outlier_n_div_nLM)){
+            Status <- Status + 1
+
+            if (LM_Height_outlier_n_div_nLM > HardLimHeightProp || is.nan(LM_Height_outlier_n_div_nLM)){
+              Status <- Status + 2
+            }
           }
         }
+
+
       }
 
       #### For fwhm ####
@@ -530,13 +554,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusFWHM==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if (LM_FWHM_outlier_n_div_nLM > SoftLimFWHMProp || is.nan(LM_FWHM_outlier_n_div_nLM)){
-          Status <- Status + 1
+        if(SoftLimFWHMProp!=0){
+          testsMade = testsMade+3
 
-          if (LM_FWHM_outlier_n_div_nLM > HardLimFWHMProp || is.nan(LM_FWHM_outlier_n_div_nLM)){
-            Status <- Status + 2
+          if (LM_FWHM_outlier_n_div_nLM > SoftLimFWHMProp || is.nan(LM_FWHM_outlier_n_div_nLM)){
+            Status <- Status + 1
+
+            if (LM_FWHM_outlier_n_div_nLM > HardLimFWHMProp || is.nan(LM_FWHM_outlier_n_div_nLM)){
+              Status <- Status + 2
+            }
           }
         }
       }
@@ -561,13 +589,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusTF==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if(LM_TF_outlier_n_div_nLM > SoftLimTFProp || is.nan(LM_TF_outlier_n_div_nLM)){
-          Status <- Status + 1
+        if(SoftLimTFProp!=0){
+          testsMade = testsMade+3
 
-          if (LM_TF_outlier_n_div_nLM > HardLimTFProp || is.nan(LM_TF_outlier_n_div_nLM)){
-            Status <- Status + 2
+          if(LM_TF_outlier_n_div_nLM > SoftLimTFProp || is.nan(LM_TF_outlier_n_div_nLM)){
+            Status <- Status + 1
+
+            if (LM_TF_outlier_n_div_nLM > HardLimTFProp || is.nan(LM_TF_outlier_n_div_nLM)){
+              Status <- Status + 2
+            }
           }
         }
       }
@@ -592,13 +624,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusSN==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if (LM_SN_outlier_n_div_nLM > SoftLimSNProp || is.nan(LM_SN_outlier_n_div_nLM)){
-          Status <- Status + 1
+        if(SoftLimSNProp!=0){
+          testsMade = testsMade+3
 
-          if (LM_SN_outlier_n_div_nLM > HardLimSNProp || is.nan(LM_SN_outlier_n_div_nLM)){
-            Status <- Status + 2
+          if (LM_SN_outlier_n_div_nLM > SoftLimSNProp || is.nan(LM_SN_outlier_n_div_nLM)){
+            Status <- Status + 1
+
+            if (LM_SN_outlier_n_div_nLM > HardLimSNProp || is.nan(LM_SN_outlier_n_div_nLM)){
+              Status <- Status + 2
+            }
           }
         }
       }
@@ -623,13 +659,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusNoise==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if (LM_NOISE_outlier_n_div_nLM > SoftLimNoiseProp || is.nan(LM_NOISE_outlier_n_div_nLM)){
-          Status <- Status + 1
+        if(SoftLimNoiseProp!=0){
+          testsMade = testsMade+3
 
-          if (LM_NOISE_outlier_n_div_nLM > HardLimNoiseProp || is.nan(LM_NOISE_outlier_n_div_nLM)){
-            Status <- Status + 2
+          if (LM_NOISE_outlier_n_div_nLM > SoftLimNoiseProp || is.nan(LM_NOISE_outlier_n_div_nLM)){
+            Status <- Status + 1
+
+            if (LM_NOISE_outlier_n_div_nLM > HardLimNoiseProp || is.nan(LM_NOISE_outlier_n_div_nLM)){
+              Status <- Status + 2
+            }
           }
         }
       }
@@ -654,16 +694,19 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       }
       #Checking if proportion of intensity outliers are higher than set limits
       if (Config$statusDataPoints==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if(LM_DataPoints_outlier_n_div_nLM > SoftLimIntProp || is.nan(LM_DataPoints_outlier_n_div_nLM)){
-          Status <- Status + 1
+        if(SoftLimIntProp!=0){
+          testsMade = testsMade+3
 
-          if (LM_DataPoints_outlier_n_div_nLM > HardLimIntProp || is.nan(LM_DataPoints_outlier_n_div_nLM)){
-            Status <- Status + 2
+          if(LM_DataPoints_outlier_n_div_nLM > SoftLimIntProp || is.nan(LM_DataPoints_outlier_n_div_nLM)){
+            Status <- Status + 1
+
+            if (LM_DataPoints_outlier_n_div_nLM > HardLimIntProp || is.nan(LM_DataPoints_outlier_n_div_nLM)){
+              Status <- Status + 2
+            }
           }
         }
-
       }
 
 
@@ -676,13 +719,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       LM_n_p = (LM_n_z>t_Crit1Tail)
       #Checking if proportion of retention time outliers are higher than set limits
       if (Config$statusnLM==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if (LM_numbers < SoftLimnLMs){
-          Status <- Status + 1
+        if(SoftLimnLMs!=0){
+          testsMade = testsMade+3
 
-          if (LM_numbers < HardLimnLMs){
-            Status <- Status + 2
+          if (LM_numbers < SoftLimnLMs){
+            Status <- Status + 1
+
+            if (LM_numbers < HardLimnLMs){
+              Status <- Status + 2
+            }
           }
         }
       }
@@ -695,13 +742,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       LM_IPO_p = (LM_IPO_z>t_Crit2Tail)
       #Checking if proportion of retention time outliers are higher than set limits
       if (Config$statusIPO==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if(LM_IPO_score_ref < SoftLimIPO){
-          Status <- Status + 1
+        if(SoftLimIPO!=0){
+          testsMade = testsMade+3
 
-          if (LM_IPO_score_ref < HardLimIPO){
-            Status <- Status + 2
+          if(LM_IPO_score_ref < SoftLimIPO){
+            Status <- Status + 1
+
+            if (LM_IPO_score_ref < HardLimIPO){
+              Status <- Status + 2
+            }
           }
         }
       }
@@ -713,13 +764,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       Peak_number_p = (Peak_number_z>t_Crit2Tail)
 
       if (Config$statusNPeaks==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if(LM_nPeaks_ref < SoftLimnPeaks){
-          Status <- Status + 1
+        if(SoftLimnPeaks!=0){
+          testsMade = testsMade+3
 
-          if (LM_nPeaks_ref < HardLimnPeaks){
-            Status <- Status + 2
+          if(LM_nPeaks_ref < SoftLimnPeaks){
+            Status <- Status + 1
+
+            if (LM_nPeaks_ref < HardLimnPeaks){
+              Status <- Status + 2
+            }
           }
         }
       }
@@ -731,13 +786,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       LM_TIC_p = (LM_TIC_z>t_Crit2Tail)
       #Checking if proportion of retention time outliers are higher than set limits
       if (Config$statusTIC==T){
-        testsMade = testsMade+4
+        testsMade = testsMade+1
 
-        if(LM_TIC_ref < SoftLimTIC){
-          Status <- Status + 1
+        if(SoftLimTIC!=0){
+          testsMade = testsMade+3
 
-          if (LM_TIC_ref < HardLimTIC){
-            Status <- Status + 2
+          if(LM_TIC_ref < SoftLimTIC){
+            Status <- Status + 1
+
+            if (LM_TIC_ref < HardLimTIC){
+              Status <- Status + 2
+            }
           }
         }
       }
@@ -802,7 +861,10 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       #### PUT SUBMIT LMQUALITY HERE ####
       # fwrite(check_LM_info, paste0(reportPath,reportName), append=TRUE, col.names=F, row.names=F, sep=";")
     }
-    write.table("Finished analysis", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+    if(!batch){
+      write.table("Finished analysis", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+    }
+
 
     #Else statement referring back to whether there are enough samples in DB to even test sample
   } else {
