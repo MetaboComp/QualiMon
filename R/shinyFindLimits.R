@@ -1153,6 +1153,7 @@ findLimitsServer<-function(id,r){
               }
             }
 
+            configOutput[is.na(configOutput)] <- 0
 
             # updatePickerInput()
 

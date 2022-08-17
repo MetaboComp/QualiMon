@@ -195,9 +195,6 @@ runBatchServer<-function(id,r){
                 cfgFile <- readConfigFile(cfgFilePath)
 
                 for(i in 1:length(choosenDirs)){
-                  print(chosenDirs)
-                  print(choosenDirs[i])
-                  print(basename(choosenDirs[i]))
                   progressBatchRun$set(detail=paste0("\n",basename(choosenDirs[i])))
                   checkLMBatch(choosenDirs[i], projName, cwp=NULL, cfgFile, sumFiles, progressBatchRun)
                 }
