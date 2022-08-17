@@ -16,7 +16,8 @@ checkLM(
   noCheck = c("blank", "cond", "CP"),
   cwp = NULL,
   Config = Config,
-  slackOn = F
+  slackOn = F,
+  batch = F
 )
 }
 \arguments{

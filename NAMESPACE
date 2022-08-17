@@ -2,6 +2,7 @@
 
 export("%>%")
 export(calcOutliers)
+export(fetchLMFeatureTable)
 export(launchApp)
 export(server)
 export(ui)

@@ -9,7 +9,6 @@
 #'
 #' @export fetchLMFeatureTable
 
-
 fetchLMFeatureTable <- function(dbName="NameOfDB.db", chromPol, projName, sampType){
 
   # Fetch landmark identifiers from DB to build int and RT tables

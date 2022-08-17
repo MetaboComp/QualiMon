@@ -9,7 +9,9 @@ optimizeFindLM(
   split = "@",
   minrttocheck = 40,
   Prefilterintensity,
-  mode
+  mode,
+  minLM = 100,
+  maxLM = 200
 )
 }
 \arguments{
