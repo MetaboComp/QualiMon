@@ -15,4 +15,4 @@ QualiMon::launchApp()
 ```
 
 ### 3. Tutorial
-The tutorial for using the app can be found [here](https://github.com/MetaboComp/QualiMon/)
+The tutorial for using the app can be found [here](https://github.com/MetaboComp/QualiMon/tutorial.pdf)
