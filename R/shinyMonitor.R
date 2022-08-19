@@ -837,7 +837,7 @@ monitorServer<-function(id,r){
           input$preConfig
         },
         handlerExpr={
-          shinyFileChoose(input,"preConfig", root=r$configWiz$roots, filetypes=c('','txt'), session=session)
+          shinyFileChoose(input,"preConfig", root=c(r$configWiz$roots,wd="."), filetypes=c('','txt'), session=session)
 
           if(!is.null(input$preConfig) && length(grep(".txt",as.character(input$preConfig)))>0){
             fileSelMonitor<-parseFilePaths(r$configWiz$roots,input$preConfig)

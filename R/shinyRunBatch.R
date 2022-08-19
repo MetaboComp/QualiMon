@@ -112,7 +112,7 @@ runBatchServer<-function(id,r){
           input$cfgFilePath
         },
         handlerExpr={
-          shinyFileChoose(input,'cfgFilePath', root=r$configWiz$roots, filetypes=c('','txt'), session=session)
+          shinyFileChoose(input,'cfgFilePath', root=c(r$configWiz$roots,wd="."), filetypes=c('','txt'), session=session)
 
           if(!is.null(input$cfgFilePath) && length(grep(".txt",as.character(input$cfgFilePath)))>0){
 

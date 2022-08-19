@@ -419,7 +419,7 @@ configWizServer<-function(id,r){
         handlerExpr={
           # req(input$dir4)
 
-          shinyFileChoose(input, 'dir4', root=r$configWiz$roots, filetypes=c('', 'exe'), session=session)
+          shinyFileChoose(input, 'dir4', root=c(r$configWiz$roots,wd="."), filetypes=c('', 'exe'), session=session)
 
           # if(!is.null(input$dir4)){
           if(!is.null(input$dir4) && any(grepl(".exe",as.character(input$dir4)))){
@@ -435,7 +435,7 @@ configWizServer<-function(id,r){
           input$dir5
         },
         handlerExpr={
-          shinyFileChoose(input,'dir5', root=r$configWiz$roots, filetypes=c('','db','sqlite'), session=session)
+          shinyFileChoose(input,'dir5', root=c(r$configWiz$roots,wd="."), filetypes=c('','db','sqlite'), session=session)
 
           if(!is.null(input$dir5)){
             fileSel<-parseFilePaths(r$configWiz$roots,input$dir5)

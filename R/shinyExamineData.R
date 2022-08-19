@@ -990,7 +990,7 @@ examineDataServer<-function(id,r){
           input$configPath
         },
         handlerExpr={
-          shinyFileChoose(input,"configPath", root=r$configWiz$roots, filetypes=c('','txt'), session=session)
+          shinyFileChoose(input,"configPath", root=c(r$configWiz$roots,wd="."), filetypes=c('','txt'), session=session)
 
           if(!is.null(input$configPath) && length(grep(".txt",as.character(input$configPath)))>0){
             fileSelMonitor<-parseFilePaths(r$configWiz$roots,input$configPath)

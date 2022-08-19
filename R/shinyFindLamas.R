@@ -236,7 +236,7 @@ findLamasServer<-function(id,r){
                          tags$br(),
                          tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[1]]))),
                          tags$br(),
-                         tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[1]][5])
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[1]][5]),3)
                        )
                      }
                    )
@@ -260,7 +260,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[2]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[2]][5])
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[2]][5]),3)
                      )
                      }
                    )
@@ -284,7 +284,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[3]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[3]][5])
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[3]][5]),3)
                      )
                      }
                    )
@@ -308,7 +308,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[4]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[4]][5])
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[4]][5]),3)
                      )
                      }
                    )
@@ -332,7 +332,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[5]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[5]][5])
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[5]][5]),3)
                      )
                      }
                    )
@@ -356,7 +356,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[6]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[6]][5])
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[6]][5]),3)
                      )
                      }
                    )
@@ -380,7 +380,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[7]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[7]][5])
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[7]][5]),3)
                      )
                      }
                    )
@@ -404,7 +404,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[8]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[8]][5])
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[8]][5]),3)
                      )
                      }
                    )
@@ -428,7 +428,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[9]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[9]][5])
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[9]][5]),3)
                      )
                      }
                    )
@@ -452,7 +452,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[10]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), r$findLamas$outObj[[2]][[10]][5])
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[10]][5]),3)
                      )
                      }
                    )
@@ -578,7 +578,7 @@ findLamasServer<-function(id,r){
           input$loadOpt
         },
         handlerExpr={
-          shinyFileChoose(input,'loadOpt', root=r$configWiz$roots, filetypes=c('','rds'), session=session)
+          shinyFileChoose(input,'loadOpt', roots=c(r$configWiz$roots, wd="."), filetypes=c('','rds'), session=session)
 
           if(!is.null(input$loadOpt) && length(grep(".rds",as.character(input$loadOpt)))>0){
             fileSelMonitor <- parseFilePaths(r$configWiz$roots,input$loadOpt)
@@ -607,7 +607,7 @@ findLamasServer<-function(id,r){
           input$dbSubmitLamasTo
         },
         handlerExpr = {
-          shinyFileChoose(input,'dbSubmitLamasTo', root=r$configWiz$roots, filetypes=c('','db'), session=session)
+          shinyFileChoose(input,'dbSubmitLamasTo', roots=c(r$configWiz$roots, wd="."), filetypes=c('','db'), session=session)
 
           if(!is.null(input$dbSubmitLamasTo) && grepl(".db",as.character(input$dbSubmitLamasTo))){
             fileSelMonitor <- parseFilePaths(r$configWiz$roots,input$dbSubmitLamasTo)
@@ -701,7 +701,7 @@ findLamasServer<-function(id,r){
           input$preFCPFilepath
         },
         handlerExpr={
-          shinyFileChoose(input,'preFCPFilepath', root=r$configWiz$roots, filetypes=c('','rds'), session=session)
+          shinyFileChoose(input,'preFCPFilepath', roots=c(r$configWiz$roots, wd="."), filetypes=c('','rds'), session=session)
 
           if(!is.null(input$preFCPFilepath) && length(grep(".rds",as.character(input$preFCPFilepath)))>0){
 
@@ -823,7 +823,7 @@ findLamasServer<-function(id,r){
           input$DBDir
         },
         handlerExpr={
-          shinyDirChoose(input,"DBDir", root=r$configWiz$roots,session=session)
+          shinyDirChoose(input,"DBDir", roots=c(r$configWiz$roots, wd="."), session=session)
           if(length(input$DBDir) > 0 && ! is.null(input$DBDir)){
             r$findLamas$DBDir <- parseDirPath(r$configWiz$roots, input$DBDir)
           }
