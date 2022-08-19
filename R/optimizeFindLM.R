@@ -49,7 +49,7 @@ optimizeFindLM <- function(preFCPfilepath, split='@', minrttocheck=40, Prefilter
   rank1 <- foundLMs[[sortedscore[1]]]
   rank1settings <- cbind(Des[sortedscore[1],], Coverage[sortedCoverage[1]])
   rank2 <- foundLMs[[sortedscore[2]]]
-  rank2settings <- cbind(Des[sortedCoverage[2],], Coverage[sortedCoverage[2]])
+  rank2settings <- cbind(Des[sortedscore[2],], Coverage[sortedCoverage[2]])
   rank3 <- foundLMs[[sortedscore[3]]]
   rank3settings <- cbind(Des[sortedscore[3],], Coverage[sortedCoverage[3]])
   rank4 <- foundLMs[[sortedscore[4]]]
