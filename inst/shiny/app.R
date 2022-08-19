@@ -1,1 +1,1 @@
-QualiMon::launchApp()
+QualiMon::launchQualiMon()
