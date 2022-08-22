@@ -3,7 +3,7 @@
 export("%>%")
 export(calcOutliers)
 export(fetchLMFeatureTable)
-export(launchApp)
+export(launchQualiMon)
 export(server)
 export(ui)
 import(DBI)
