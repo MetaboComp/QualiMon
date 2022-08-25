@@ -143,7 +143,7 @@ monitorServer<-function(id,r){
       graph_colors<-c("green", "red", "darkblue", "orange", "black")
 
       filePath<-NULL
-
+      inter <- AsyncInterruptor$new()
 
       statusPlot <- reactiveVal()
       intPlot <- reactiveVal()
@@ -486,7 +486,7 @@ monitorServer<-function(id,r){
       ####nPeaks plot - Actual plot####
       output$plotnPeaks<-renderPlotly({
         if(!is.null(r$monitor$plotDataSample)){
-          p <- plot_ly()
+          p <- plot_ly(type="scatter")
 
           #Setting limits based on chromPol
           if(r$monitor$chromPolFormat=="RP"){
@@ -568,7 +568,7 @@ monitorServer<-function(id,r){
       ####IPO plot - Actual plot####
       output$plotIPO<-renderPlotly({
         if(!is.null(r$monitor$plotDataSample)){
-          p <- plot_ly()
+          p <- plot_ly(type="scatter", mode="lines+markers")
 
           #Setting limits based on chromPol
           if(r$monitor$chromPolFormat=="RP"){
@@ -651,7 +651,7 @@ monitorServer<-function(id,r){
       ####nLM plot - Actual plot####
       output$plotnLM<-renderPlotly({
         if(!is.null(r$monitor$plotDataSample)){
-          p <- plot_ly()
+          p <- plot_ly(type="scatter", mode="lines+markers")
 
           #Setting limits based on chromPol
           if(r$monitor$chromPolFormat=="RP"){
@@ -733,7 +733,7 @@ monitorServer<-function(id,r){
       ####TIC plot - Actual plot####
       output$plotTIC<-renderPlotly({
         if(!is.null(r$monitor$plotDataSample)){
-          p <- plot_ly()
+          p <- plot_ly(type="scatter", mode="lines+markers")
 
           #Setting limits based on chromPol
           if(r$monitor$chromPolFormat=="RP"){
@@ -758,7 +758,11 @@ monitorServer<-function(id,r){
             sampsSum = 1
 
             for(i in 1:length(r$monitor$batchFreq)){
-              p <- add_trace(p, x=c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i])), y=r$monitor$plotDataSample$TIC[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))], type="scatter", mode="lines+markers",
+              p <- add_trace(p,
+                             x=c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i])),
+                             y=r$monitor$plotDataSample$TIC[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))],
+                             type="scatter",
+                             mode="lines+markers",
                              marker=list(
                                color=graph_colors[i%%5+1]
                              ),
@@ -893,21 +897,33 @@ monitorServer<-function(id,r){
 
           if(input$start==F){
             r$monitor$start<-F
-          } else {
-            r$monitor$start<-T
-            config<-r$configWiz$preConfig
-            availableChromPols <- r$monitor$availableChromPols
+            inter$interrupt("Stopped monitoring")
 
-            #Future async operation that can handle errors from initFolderMonitoring
-            future({
-              initFolderMonitoring(config, availableChromPols)
-            }) %...>%
-              (function(result){
-              }) %...!%
-              (function(error){
-                r$monitor$start<-F
-                warning(error)
-              })
+          } else {
+            if(r$runBatch$running==T){
+              showModal(
+                modalDialog(
+                  title="Batch job running",
+                  "Can't live monitor while running a batch job. Please abort the batch-job or wait until it's finished to monitor.",
+                  easyClose=F
+                )
+              )
+            } else {
+              r$monitor$start<-T
+              config<-r$configWiz$preConfig
+              availableChromPols <- r$monitor$availableChromPols
+
+              #Future async operation that can handle errors from initFolderMonitoring
+              future({
+                initFolderMonitoring(config, availableChromPols, progressMonitor=function(i) inter$execInterrupts())
+              }) %...>%
+                (function(result){
+                }) %...!%
+                (function(error){
+                  r$monitor$start<-F
+                  warning(error)
+                })
+            }
           }
 
           #Looks weird but only way to snap out of waiting for future

@@ -23,7 +23,9 @@ runBatchServer<-function(id,r){
     id,
     function(input, output, session){
       ns<-session$ns
+
       processReady <- reactiveVal(1)
+      interBatch <- AsyncInterruptor$new()
 
       ###############################
       #### Server side rendering ####
@@ -96,8 +98,10 @@ runBatchServer<-function(id,r){
         req(input$subDirChooser)
         req(processReady())
 
-        if(input$projName != ""){
+        if(input$projName != "" && !is.null(r$runBatch$running) && r$runBatch$running==F){
             actionButton(ns('processButton'), "Process batches")
+        } else if(input$projName != "" && !is.null(r$runBatch$running) && r$runBatch$running==T){
+            actionButton(ns('abortProcessButton'), "Abort batch run")
         }
       })
 
@@ -157,64 +161,98 @@ runBatchServer<-function(id,r){
           input$processButton
         },
         handlerExpr={
-          ####Transfer all r variables to local variables
-          choosenDirs <- r$runBatch$subPaths[which(r$runBatch$subDirs%in%input$subDirChooser)]
-          projName <- input$projName
-          cfgFilePath <- r$runBatch$cfgFilePath
-
-          #Checking that there are mzML files in all batch folders
-          nFiles <- vector(length=length(choosenDirs))
-          sumFiles <- 0
-
-          for(i in 1:length(choosenDirs)){
-            if(length(list.files(choosenDirs[i], ".mzML")) <1){
-              nFiles[i] = TRUE
-            }
-            sumFiles <- sumFiles + length(list.files(choosenDirs[i]))
-          }
-
-          #If any folder missing .mzML user informed, otherwise starts running batches
-          if(any(nFiles==TRUE)){
+          ####Safety pop-up to make sure live-monitoring is not on-going
+          if(r$monitor$start==T){
             showModal(
               modalDialog(
-                title="Missing .mzML files",
-                paste0("No .mzML files found in folders:"),
-                br(),
-                paste(choosenDirs[nFiles], sep="\n"),
-                easyClose=TRUE
+                title="Unsafe batch job",
+                "Live monitoring is on-going. Make sure to abort live-monitoring prior to running a batch.",
+                easyClose = F
               )
             )
-          }
-          else{
-            #Running all samples in all folders selected by user
-            progressBatchRun <- AsyncProgress$new(message="Batch processing old files\n")
-            # processReady(NULL)
+          } else {
+            ####Transfer all r variables to local variables
+            choosenDirs <- r$runBatch$subPaths[which(r$runBatch$subDirs%in%input$subDirChooser)]
+            projName <- input$projName
+            cfgFilePath <- r$runBatch$cfgFilePath
 
-            future_promise(seed=NULL,
-              {
-                cfgFile <- readConfigFile(cfgFilePath)
+            #Checking that there are mzML files in all batch folders
+            nFiles <- vector(length=length(choosenDirs))
+            sumFiles <- 0
 
-                for(i in 1:length(choosenDirs)){
-                  progressBatchRun$set(detail=paste0("\n",basename(choosenDirs[i])))
-                  checkLMBatch(choosenDirs[i], projName, cwp=NULL, cfgFile, sumFiles, progressBatchRun)
-                }
-                progressBatchRun$close()
-              }) %>% then(
-                onRejected= function(err){
-                  progressBatchRun$close()
-                  showModal(
-                    modalDialog(
-                      title="Problems with config file",
-                      paste0("Make sure a correctly formated config file has been selected and that the DB file referenced by it is existing!"),
-                      easyClose=F
-                    )
-                  )
-                }
+            for(i in 1:length(choosenDirs)){
+              if(length(list.files(choosenDirs[i], ".mzML")) <1){
+                nFiles[i] = TRUE
+              }
+              sumFiles <- sumFiles + length(list.files(choosenDirs[i]))
+            }
+
+            #If any folder missing .mzML user informed, otherwise starts running batches
+            if(any(nFiles==TRUE)){
+              showModal(
+                modalDialog(
+                  title="Missing .mzML files",
+                  paste0("No .mzML files found in folders:"),
+                  br(),
+                  paste(choosenDirs[nFiles], sep="\n"),
+                  easyClose=TRUE
+                )
               )
-            NULL
+            } else {
+              #Running all samples in all folders selected by user
+              progressBatchRun <- AsyncProgress$new(message="Batch processing old files\n")
+              r$runBatch$running <- T
+              # processReady(NULL)
+
+              future_promise(seed=NULL,{
+                              # runBatch(cfgFilePath, choosenDirs, progressBatchRun, projName, sumFiles, progressMonitor=function(i) interBatch$execInterrupts())
+                              cfgFile <- readConfigFile(cfgFilePath)
+
+                              for(i in 1:length(choosenDirs)){
+                                progressBatchRun$set(detail=paste0("\n",basename(choosenDirs[i])))
+                                checkLMBatch(choosenDirs[i], projName, cwp=NULL, cfgFile, sumFiles, progressBatchRun, progressMonitor=function(i) inter$execInterrupts())
+                              }
+                              progressBatchRun$close()
+                             }) %>% then(
+                               onRejected= function(err){
+                                 progressBatchRun$close()
+                                 showModal(
+                                   modalDialog(
+                                     title="Problem with the batch run",
+                                     paste0("Something wen't wrong with the batch run:\n\n", err),
+                                     easyClose=F
+                                   )
+                                 )
+                               }
+                             )
+              NULL
+            }
           }
         }
       )
+
+      ####Abort process batch####
+      observeEvent(
+        ignoreNULL=T,
+        eventExpr={
+          input$abortProcessButton
+        },
+        handlerExpr = {
+          interBatch$interrupt("Stopped batch-job")
+          r$runBatch$running <- F
+        }
+      )
+
+
+      #### Run batch function ####
+      # runBatch <- function(cfgFilePath, choosenDirs, progressBatchRun, projName, sumFiles, progressMonitor=function(i) cat(".")){
+      #   cfgFile <- readConfigFile(cfgFilePath)
+      #
+      #   for(i in 1:length(choosenDirs)){
+      #     progressBatchRun$set(detail=paste0("\n",basename(choosenDirs[i])))
+      #     checkLMBatch(choosenDirs[i], projName, cwp=NULL, cfgFile, sumFiles, progressBatchRun, progressMonitor=function(i) cat("."))
+      #   }
+      # }
     }
   )
 }

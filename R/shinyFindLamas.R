@@ -94,7 +94,7 @@ findLamasUI<-function(id){
     fluidRow(
       uiOutput(ns('reviewLamas')),
       box(
-        title="Save opt. data and submit LaMas to DB",
+        title="Save optimization data and submit LaMas to DB",
         width=4,
         solidHeader=T,
 
@@ -236,7 +236,7 @@ findLamasServer<-function(id,r){
                          tags$br(),
                          tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[1]]))),
                          tags$br(),
-                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[1]][5]),3)
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[1]][5],3))
                        )
                      }
                    )
@@ -260,7 +260,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[2]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[2]][5]),3)
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[2]][5],3))
                      )
                      }
                    )
@@ -284,7 +284,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[3]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[3]][5]),3)
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[3]][5],3))
                      )
                      }
                    )
@@ -308,7 +308,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[4]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[4]][5]),3)
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[4]][5],3))
                      )
                      }
                    )
@@ -332,7 +332,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[5]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[5]][5]),3)
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[5]][5],3))
                      )
                      }
                    )
@@ -356,7 +356,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[6]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[6]][5]),3)
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[6]][5],3))
                      )
                      }
                    )
@@ -380,7 +380,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[7]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[7]][5]),3)
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[7]][5],3))
                      )
                      }
                    )
@@ -404,7 +404,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[8]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[8]][5]),3)
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[8]][5],3))
                      )
                      }
                    )
@@ -428,7 +428,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[9]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[9]][5]),3)
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[9]][5],3))
                      )
                      }
                    )
@@ -452,7 +452,7 @@ findLamasServer<-function(id,r){
                        tags$br(),
                        tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[10]]))),
                        tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[10]][5]),3)
+                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[10]][5],3))
                      )
                      }
                    )
@@ -581,8 +581,12 @@ findLamasServer<-function(id,r){
           shinyFileChoose(input,'loadOpt', roots=c(r$configWiz$roots, wd="."), filetypes=c('','rds'), session=session)
 
           if(!is.null(input$loadOpt) && length(grep(".rds",as.character(input$loadOpt)))>0){
-            fileSelMonitor <- parseFilePaths(r$configWiz$roots,input$loadOpt)
-            r$findLamas$loadOpt <- as.character(fileSelMonitor$datapath)
+            if(input$loadOpt$root=="wd"){
+              r$findLamas$loadOpt <- paste0(getwd(), "/", input$loadOpt$files$`0`[[2]])
+            } else {
+              fileSelMonitor <- parseFilePaths(r$configWiz$roots,input$loadOpt)
+              r$findLamas$loadOpt <- as.character(fileSelMonitor$datapath)
+            }
             r$findLamas$outObj <- readRDS(r$findLamas$loadOpt)
 
             #Updating all settings based on save file, will automatically trigger input into r$findLamas for all of them as well

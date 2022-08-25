@@ -47,8 +47,6 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
     testInj$chromPol<-"HN"
   }
 
-  print(testInj$chromPol)
-
   #Checking if sample or sQC
   if(sum(str_detect(fileName, regex(noCheck, ignore_case=T)))){
     cat(paste("Injection type on exclusion list. No data quality check for ", testInj$filePath,"\n",sep=""))
@@ -60,6 +58,14 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
     type<-"sample"
   }
   testInj$type<-type
+
+  #Double checking that file is not already in DB to avoid errors
+  conn <- dbConnect(RSQLite::SQLite(),dbName)
+  s1 <- sprintf("SELECT * FROM injections WHERE injections.name = %s",
+                fileName)
+  if(length(dbGetQuery(conn, s1)) > 0){
+    return()
+  }
 
   #Extracting information from config-file
   ##setting up soft and hard limits depending on chromatography¨(in future) and polarity

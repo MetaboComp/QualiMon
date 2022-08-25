@@ -10,7 +10,7 @@
 #' @return Nothing
 
 
-checkLMBatch<-function(fileDir, projName, cwp=NULL, Config, sumFiles, progressBatchRun){
+checkLMBatch<-function(fileDir, projName, cwp=NULL, Config, sumFiles, progressBatchRun, progressMonitor=function(i) cat(".")){
 
   #Checking if project name is present in DB
   conn <- dbConnect(RSQLite::SQLite(),Config$dbName)

@@ -41,6 +41,9 @@ optimizeFindLM <- function(preFCPfilepath, split='@', minrttocheck=40, Prefilter
   Resmatr <- cbind(Settings, Coverage)
   range01 <- function(x){(x-min(x))/(max(x)-min(x))}
   Scaledmatr <- apply(Resmatr, 2, FUN=range01)
+  if(any(is.nan(Scaledmatr))){
+    Scaledmatr[is.nan(Scaledmatr)] <- 1
+  }
   Scaledmatr[,2] <- Scaledmatr[,2]*-1
   testobjfun <- apply(Scaledmatr, 1, sum)
   sortedscore  <- sort(testobjfun, decreasing=T)

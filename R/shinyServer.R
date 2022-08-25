@@ -26,6 +26,8 @@ server <- function(input, output, session){
   r$runBatch <- reactiveValues()
 
 
+
+
   ###Running module servers
   configWizServer("configWiz", r)
   monitorServer("monitor", r)
@@ -38,6 +40,11 @@ server <- function(input, output, session){
 
 
   ###Session end
+  onSessionStart = isolate({
+    r$runBatch$running <- F
+    r$monitor$start <- F
+  })
+
   session$onSessionEnded(function() {
     stopApp()
   })

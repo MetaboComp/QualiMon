@@ -5,7 +5,7 @@
 #'
 #' @return Messages regarding the sample quality
 
-initFolderMonitoring <- function(configFilePath, availableChromPols){
+initFolderMonitoring <- function(configFilePath, availableChromPols, progressMonitor=function(i) cat(".")){
   #Setting up parameters from config file
   Config <- readConfigFile(configFilePath)
   dir <- Config$dir
@@ -143,6 +143,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols){
         file.rename(paste0(Backupdir,"/",basename(FileForConversion)), paste0(Backupdir,"/",NewName))
         FileForConversion<-NewName
       }
+
       #Checking if file is a rerun, and if so, renames it
       if(length(grep("rerun",basename(FileForConversion)))>0){
         NewName<-gsub("-rerun","",basename(FileForConversion))

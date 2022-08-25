@@ -155,13 +155,13 @@ examineDataServer<-function(id,r){
 
               tags$b("Choose a config file"),
               br(),
-              shinyFilesButton(id=ns("configPath"), label="Choose config file", title="", multiple=F),
-              tags$b(r$examineData$configPath)
+              shinyFilesButton(id=ns("configPath"), label="Choose config file", title="", multiple=F)
+              # tags$b(r$examineData$preConfig)
             ),
             column(
               width=6,
 
-              selectInput(ns("projName"), "Select project", choices=c("All samples", r$examineData$projects), selected=input$projName)
+              selectInput(ns("projName"), "Project", choices=c("All samples", r$examineData$projects), selected=input$projName)
             )
           ),
           fluidRow(
@@ -170,7 +170,7 @@ examineDataServer<-function(id,r){
             column(
               width=4,
 
-              selectInput(ns("sampType"), "Select injection type", choices=c("sample","sQC"))
+              selectInput(ns("sampType"), "Injection type", choices=c("sample","sQC"))
             ),
             column(
               width=2,
@@ -179,7 +179,23 @@ examineDataServer<-function(id,r){
             column(
               width=6,
 
-              selectInput(ns("chromPol"), "Select chromPol", choices=c("RP","RN","HP","HN"))
+              selectInput(ns("chromPol"), "Chrom & Pol", choices=c("RP","RN","HP","HN"))
+            )
+          ),
+          fluidRow(
+            column(
+              width=12,
+
+              if(is.null(r$examineData$preConfig)){
+                tags$b("No config file loaded.")
+              } else {
+                tagList(
+                  br(),
+                  tags$b("Config file: "),
+                  r$examineData$preConfig,
+                  br()
+                )
+              }
             )
           )
         )
@@ -860,7 +876,11 @@ examineDataServer<-function(id,r){
 
           for(i in 1:length(r$examineData$batchFreq)){
 
-            p<-add_trace(p, x=c(sampsSum:(sampsSum+r$examineData$sampsInBatch[i])), y=r$examineData$sampleLevelDT$nPeaks[c(sampsSum:(sampsSum+r$examineData$sampsInBatch[i]))], type="scatter", mode="lines+markers", #-1, -1
+            p<-add_trace(p,
+                         x=c(sampsSum:(sampsSum+r$examineData$sampsInBatch[i])),
+                         y=r$examineData$sampleLevelDT$TIC[c(sampsSum:(sampsSum+r$examineData$sampsInBatch[i]))],
+                         type="scatter",
+                         mode="lines+markers", #-1, -1
                          marker=list(
                            color=graph_colors[i%%5+1]
                          ),
@@ -876,7 +896,11 @@ examineDataServer<-function(id,r){
 
           # If first batch, different printing settings
         } else {
-          p <- add_trace(p, x=c(1:r$examineData$sampsInBatch[1]), y=r$examineData$sampleLevelDT$nPeaks, type="scatter", mode="lines+markers",
+          p <- add_trace(p,
+                         x=c(1:r$examineData$sampsInBatch[1]),
+                         y=r$examineData$sampleLevelDT$TIC,
+                         type="scatter",
+                         mode="lines+markers",
                          marker=list(
                            color=graph_colors[1]
                          ),

@@ -4,7 +4,11 @@
 \alias{initFolderMonitoring}
 \title{Function to start monitoring .d files from LC/MS}
 \usage{
-initFolderMonitoring(configFilePath, availableChromPols)
+initFolderMonitoring(
+  configFilePath,
+  availableChromPols,
+  progressMonitor = function(i) cat(".")
+)
 }
 \arguments{
 \item{configFilePath}{File path to config file to use for monitoring}
