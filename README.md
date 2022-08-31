@@ -2,11 +2,13 @@
 Live monitoring of LC-MS data
 QualiMon - LaMas is a shiny app made for local use only.
 Evaluate the quality of every injection as acquisition is completed.
+Associated manuscript 'Continuous Quality Monitoring for Non-target MS-based Analysis' have been submitted for peer review.
+
 
 ### 1. Installation
 ```
-require(devtools)
-install_github("metabocomp/qualimon")
+if (!require("remotes", quietly = TRUE)) install.packages("remotes")
+remotes::install_git("MetaboComp/QualiMon ")
 ```
 
 ### 2. Launching the app
