@@ -140,14 +140,14 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   #Trying to avoid XCMS bug
   #gc (reset = TRUE)
   if(!batch){
-    write.table("Running xcms & cpc on file...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+    # write.table("Running xcms & cpc on file...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
   }
 
 
   raw_data <- readMSData(files = filePath, mode = "onDisk") # Read in file -> MS
 
   if(length(unique(raw_data@featureData@data$msLevel))==1 && unique(raw_data@featureData@data$msLevel)==2 && batch){
-    write.table("File only containing MS2 data, performing no quality check", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+    # write.table("File only containing MS2 data, performing no quality check", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
     return()
   }
 
@@ -310,7 +310,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
     ##############################################
     #### Building a 2D DF of landmark results ####
     if(!batch){
-      write.table("Performing quality tests...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+      # write.table("Performing quality tests...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
     }
 
     #Setting up LM_Ref
@@ -401,7 +401,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
 
     for(i in 1:(nrow(LM_Ref$intensity))){
       if(!batch){
-        write.table(paste0("Testing file ", LM_Ref$name[i],"..."), "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+        # write.table(paste0("Testing file ", LM_Ref$name[i],"..."), "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
       }
 
       #Setting up a new
@@ -855,11 +855,11 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
 
       #Evaluating the results to determine if file is abnormal or normal
       if(Status <= Config$statusLim){
-        writeLines(paste(LM_Ref$name[i], "is likely normal"))
+        # writeLines(paste(LM_Ref$name[i], "is likely normal"))
         check_LM_info[i,26] = Status
 
       } else {
-        writeLines(paste("Warning!!",LM_Ref$name[i]  ,"is likely abnormal!!"))
+        # writeLines(paste("Warning!!",LM_Ref$name[i]  ,"is likely abnormal!!"))
         check_LM_info[i,26] = Status
       }
 
@@ -868,7 +868,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       # fwrite(check_LM_info, paste0(reportPath,reportName), append=TRUE, col.names=F, row.names=F, sep=";")
     }
     if(!batch){
-      write.table("Finished analysis", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+      # write.table("Finished analysis", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
     }
 
 
@@ -942,9 +942,9 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   injAlreadyInDB <- submitInjToDB(dbName=dbName, injToSub=testInj)
   if(injAlreadyInDB == 0){
     submitLMPeaksToDB(dbName=dbName, injToSub=testInj)
-  } else {
-    print("Injection already in DB, no LM peak submission.")
-  }
+  } #else {
+    # print("Injection already in DB, no LM peak submission.")
+  # }
 
 
   #### MAKE ALL CHECK_LM_INFO COLUMNS INTO NUMBER ####

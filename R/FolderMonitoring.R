@@ -74,7 +74,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
   done_samples <- sub(paste0('\\',fileFormat,'$'), '', basename(done_samples))
 
   while(TRUE){
-    write.table("Awaiting new file...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+    # write.table("Awaiting new file...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
     runTime <- proc.time()[3] - startTime
     change.state <- length(Sys.glob(paste0(dir, folderDepth))) #Checking how many files are in folder and storing in "change.state"
 
@@ -89,7 +89,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
       FileForConversion <- Files[length(Files)]
       Filesize <- sum(file.info(list.files(FileForConversion, recursive = T, all.files=T, include.dirs = T, full.names=T))$size)
 
-      write.table(Files, "data/status/log.txt", sep=";", row.names = FALSE, col.names = FALSE)
+      # write.table(Files, "data/status/log.txt", sep=";", row.names = FALSE, col.names = FALSE)
 
       #ltQC functionality for having a separate ltQC project running
       if(length(grep(ltQCname,FileForConversion)>0)!=0){
@@ -113,7 +113,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
       Sys.sleep(sleep.time)
       #Sub-loop checking the youngest file which has been identified as new is still growing in size until it's not growing anymore. minFileSize makes sure that the script doesn't copy empty files which causes error
       while(sum(file.info(list.files(FileForConversion, recursive = T, all.files=T, include.dirs = T, full.names=T))$size) > Filesize || Filesize < minFileSize){
-        write.table("New file found. Monitoring file size", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+        # write.table("New file found. Monitoring file size", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
         print(paste0(sum(file.info(list.files(FileForConversion, recursive = T, all.files=T, include.dirs = T, full.names=T))$size)))
         Filesize <- sum(file.info(list.files(FileForConversion, recursive = T, all.files=T, include.dirs = T, full.names=T))$size)
         Sys.sleep(sleep.time)
@@ -128,9 +128,9 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
       Filelocation <- strsplit(FileForConversion, split="/")[[1]][c(-1:-splitlengthdir)]
       Folderlocation <- paste0(Filelocation[-length(Filelocation)], collapse="/")
 
-      write.table(cbind(Filelocation, Folderlocation), "data/status/log.txt", sep=";", row.names = FALSE, col.names = FALSE, append=TRUE)
+      # write.table(cbind(Filelocation, Folderlocation), "data/status/log.txt", sep=";", row.names = FALSE, col.names = FALSE, append=TRUE)
 
-      write.table("Making backup of raw file", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+      # write.table("Making backup of raw file", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
       Backupdir <- paste0(tmp_sink_dir, "/",Folderlocation)
       if(!file.exists(Backupdir)){
         suppressWarnings(dir.create(paste0(Backupdir), recursive = T))
@@ -160,7 +160,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
         suppressWarnings(dir.create(paste0(mzMLdir), recursive = T))
       }
 
-      write.table("Converting to .mzML format", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+      # write.table("Converting to .mzML format", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
       cmd <- paste("cd", paste0("\"",Backupdir,"\""),"&&" ,paste0("\"",msconvert,"\"") , "--64 --zlib --mzML -o",paste0("\"",mzMLdir,"\""), FileBaseName)
       #print(cmd)
       shell(cmd)
@@ -223,9 +223,9 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
         # write.csv("Filename does not conform to naming strategy, please make sure that files are properly named", file = paste0(rep.path, "/Abnormalty report of ", Sample$filenames,".csv"))
       }
     } else {
-      print(paste0("Nothing new. ", Sys.time())) #Used for functionality testing
+      # print(paste0("Nothing new. ", Sys.time())) #Used for functionality testing
     }
     Sys.sleep(sleep.time)
   }
-  print('Monitoring finished')
+  # print('Monitoring finished')
 }
