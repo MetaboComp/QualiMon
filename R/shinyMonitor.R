@@ -222,7 +222,7 @@ monitorServer<-function(id,r){
                   if(r$monitor$start==T){
                     tagList(
                       tags$b("Current status: "),
-                      r$monitor$curr_status
+                      # r$monitor$curr_status
                     )
                   }
                 }
@@ -953,15 +953,15 @@ monitorServer<-function(id,r){
       })
 
       #### Live information on what the app is doing ####
-      observe({
-        invalidateLater(millis=2000, session = session)
-        if(file.exists("data/status/status.txt") && req(r$monitor$start)==T){
-          try({
-            r$monitor$curr_status <- read.table(paste0("data/status/status.txt"))
-          },
-          silent=TRUE)
-        }
-      })
+      # observe({
+      #   invalidateLater(millis=2000, session = session)
+      #   if(file.exists("data/status/status.txt") && req(r$monitor$start)==T){
+      #     try({
+      #       r$monitor$curr_status <- read.table(paste0("data/status/status.txt"))
+      #     },
+      #     silent=TRUE)
+      #   }
+      # })
 
       #### Continuously reading the report-file associated with the current analysis####
       # oldNProject <- reactiveVal(0)
