@@ -21,7 +21,7 @@ The tutorial for using the app can be found [here](https://github.com/MetaboComp
 
 
 ### 4. System requirements
-# Software dependencies and versions tested:
+#### Software dependencies and versions tested:
 Operating system:
 - Windows 10 (due to proteowizard dependency)
 
