@@ -21,6 +21,16 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   #Extracting the file name from the filePath
   fileName<-basename(filePath)
 
+  #Checking if file is already in DB, exiting if yes
+  conn <- dbConnect(RSQLite::SQLite(),dbName)
+  fileInDB <- dbGetQuery(conn, sprintf("SELECT name FROM injections i WHERE name='%s'",
+                                       fileName))
+  dbDisconnect(conn)
+  print(fileInDB)
+  if(dim(fileInDB)[1]!=0){
+    return()
+  }
+
   #Setting up injection information to send to DB
   testInj<-list()
   testInj$date<-strsplit(fileName,"_")[[1]][1]
@@ -60,12 +70,12 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   testInj$type<-type
 
   #Double checking that file is not already in DB to avoid errors
-  conn <- dbConnect(RSQLite::SQLite(),dbName)
-  s1 <- sprintf("SELECT * FROM injections WHERE injections.name = %s",
-                fileName)
-  if(length(dbGetQuery(conn, s1)) > 0){
-    return()
-  }
+  # conn <- dbConnect(RSQLite::SQLite(),dbName)
+  # s1 <- sprintf("SELECT * FROM injections WHERE injections.name = %s",
+  #               fileName)
+  # if(length(dbGetQuery(conn, s1)) > 0){
+  #   return()
+  # }
 
   #Extracting information from config-file
   ##setting up soft and hard limits depending on chromatography¨(in future) and polarity

@@ -821,7 +821,7 @@ examineDataServer<-function(id,r){
                            color=graph_colors[1]
                          ),
                          line=list(color=graph_colors[1]),
-                         name= "nPeaks",
+                         name= "nLaMas",
                          text = ~paste("Batch: ", r$examineData$batchFreq[1], "\n", r$examineData$plotData$sampleNames[c(1:r$examineData$sampsInBatch[1])]),
                          color = graph_colors[1],
                          colors = graph_colors[1]
@@ -854,20 +854,20 @@ examineDataServer<-function(id,r){
 
         #Setting limits based on chromPol
         if(r$examineData$chromPol=="RP"){
-          upper_abline <- r$examineData$config$RPnPeaksSoftLim
-          lower_abline <- r$examineData$config$RPnPeaksHardLim
+          upper_abline <- r$examineData$config$RPTICSoftLim
+          lower_abline <- r$examineData$config$RPTICHardLim
         }
         else if (r$examineData$chromPol=="RN"){
-          upper_abline <- r$examineData$config$RNnPeaksSoftLim
-          lower_abline <- r$examineData$config$RNnPeaksHardLim
+          upper_abline <- r$examineData$config$RNTICSoftLim
+          lower_abline <- r$examineData$config$RNTICHardLim
         }
         else if (r$examineData$chromPol=="HP"){
-          upper_abline <- r$examineData$config$HPnPeaksSoftLim
-          lower_abline <- r$examineData$config$HPnPeaksHardLim
+          upper_abline <- r$examineData$config$HPTICSoftLim
+          lower_abline <- r$examineData$config$HPTICHardLim
         }
         else if (r$examineData$chromPol=="HN"){
-          upper_abline <- r$examineData$config$HNnPeaksSoftLim
-          lower_abline <- r$examineData$config$HNnPeaksHardLim
+          upper_abline <- r$examineData$config$HNTICSoftLim
+          lower_abline <- r$examineData$config$HNTICHardLim
         }
 
         # If not first batch, printing lines with different colors based on batch belonging
@@ -905,7 +905,7 @@ examineDataServer<-function(id,r){
                            color=graph_colors[1]
                          ),
                          line=list(color=graph_colors[1]),
-                         name= "nPeaks",
+                         name= "log TIC",
                          text = ~paste("Batch: ", r$examineData$batchFreq[1], "\n", r$examineData$plotData$sampleNames[c(1:r$examineData$sampsInBatch[1])]),
                          color = graph_colors[1],
                          colors = graph_colors[1]
