@@ -8,7 +8,7 @@ Associated manuscript 'Continuous Quality Monitoring for Non-target MS-based Ana
 ### 1. Installation
 ```
 if (!require("remotes", quietly = TRUE)) install.packages("remotes")
-remotes::install_git("MetaboComp/QualiMon ")
+remotes::install_git("MetaboComp/QualiMon")
 ```
 
 ### 2. Launching the app
