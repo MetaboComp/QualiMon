@@ -28,7 +28,7 @@ submitLMQualityToDB <- function(testInj, dbName, qualityTable){
                             testInj$chromPol)
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
-  injIDs <- unlist(dbGetQuery(conn, fetchQuery))
+  injIDs <- as.vector(unlist(dbGetQuery(conn, fetchQuery)))
   dbExecute(conn, createViewQuery)
   dbExecute(conn, createViewQuery2)
   sampNumb <- as.integer(dbGetQuery(conn, sampleNumberQuery))
@@ -48,13 +48,19 @@ submitLMQualityToDB <- function(testInj, dbName, qualityTable){
     sampNumb = sampNumb+1
   }
 
+  print(qualityTable)
+  print(sampNumb)
+  print(sampIter)
+
   qualityTable <- cbind(injIDs, qualityTable[,-c(1, 16:23)]) #Removing sample specific columns and filepath
   colnames(qualityTable)[1] <- c("injID")
   #SampNumb taking first two solo samples of a matrix into account
-  if(sampNumb < 3){
+  if(sampNumb < testInj$nSampsMonitor){
     qualityTable$sampleNumber <- sampNumb
+  } else if(sampNumb==testInj$nSampsMonitor){
+    qualityTable$sampleNumber <- c(1:testInj$nSampsMonitor)
   } else {
-    qualityTable$sampleNumber <- c(1:sampNumb)
+    qualityTable$sampleNumber <- c((sampNumb-(testInj$nSampsMonitor-1)):sampNumb)
   }
   qualityTable$sampleIter <- rep(as.integer(sampIter), nrow(qualityTable))
 

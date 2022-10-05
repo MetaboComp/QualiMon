@@ -13,8 +13,19 @@ fetchIPOnLM<-function(dbName="Test.db", toFetch){
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
 
-  s1<-sprintf("SELECT injID, IPOscore, nLMs, nPeaks, TIC, name FROM [IPOnLMs] WHERE type='%s' AND chromPol='%s'", toFetch$type, toFetch$chromPol) #AND projName='%s'    toFetch$projName,
-  IPOnLM<-dbGetQuery(conn, s1)
+  s1 <- sprintf("SELECT DISTINCT injID FROM [IPOnLMs] l")
+  distInjID <- as.vector(unlist(dbGetQuery(conn, s1)))
+  distInjID <- ifelse(is.na(distInjID), 0, distInjID)
+
+  if(length(distInjID)>(toFetch$nSampsMonitor-1)){
+    distInjID <- distInjID[c((length(distInjID)-(toFetch$nSampsMonitor-2)):length(distInjID))]
+  }
+
+  s2<-sprintf("SELECT injID, IPOscore, nLMs, nPeaks, TIC, name FROM [IPOnLMs] WHERE type='%s' AND chromPol='%s' AND injID IN (%s)",
+              toFetch$type,
+              toFetch$chromPol,
+              paste(as.character(distInjID), collapse=", ",sep="")) #AND projName='%s'    toFetch$projName,
+  IPOnLM<-dbGetQuery(conn, s2)
 
   dbDisconnect(conn)
 

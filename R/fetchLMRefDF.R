@@ -12,9 +12,22 @@ fetchLMRefDF<-function(dbName="Test.db", toFetch){
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
 
-  s1<-sprintf("SELECT * FROM [lmPeaks_%s_%s]",toFetch$type,toFetch$chromPol) # WHERE projName='%s'   ,toFetch$projName
-  lmPeaks<-dbGetQuery(conn, s1)
+  s1 <- sprintf("SELECT DISTINCT injID FROM [lmPeaks_%s_%s] l",
+               toFetch$type,
+               toFetch$chromPol)
+  distInjID <- as.vector(unlist(dbGetQuery(conn, s1)))
+  distInjID <- ifelse(is.na(distInjID), 0, distInjID)
 
+  if(length(distInjID)>(toFetch$nSampsMonitor-1)){
+    distInjID <- distInjID[c((length(distInjID)-(toFetch$nSampsMonitor-2)):length(distInjID))]
+  }
+
+  s2<-sprintf("SELECT * FROM [lmPeaks_%s_%s] l WHERE l.injID IN (%s)",
+              toFetch$type,
+              toFetch$chromPol,
+              paste(as.character(distInjID), collapse=", ",sep="")) # WHERE projName='%s'   ,toFetch$projName
+
+  lmPeaks<-dbGetQuery(conn, s2)
   dbDisconnect(conn)
 
   return(lmPeaks)

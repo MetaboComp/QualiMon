@@ -26,7 +26,6 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   fileInDB <- dbGetQuery(conn, sprintf("SELECT name FROM injections i WHERE name='%s'",
                                        fileName))
   dbDisconnect(conn)
-  print(fileInDB)
   if(dim(fileInDB)[1]!=0){
     return()
   }
@@ -289,6 +288,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
     toFetch$batchWeek<-testInj$batchWeek
     toFetch$chromPol<-testInj$chromPol
     toFetch$projName<-projName
+    toFetch$nSampsMonitor<-Config$nSampsMonitor
     H0Object$LMPeaks <- fetchLMRefDF(dbName=dbName, toFetch=toFetch)
     H0Object$IPOnLM <- fetchIPOnLM(dbName=dbName, toFetch=toFetch)
   } else {
@@ -296,6 +296,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
     toFetch$batchWeek<-testInj$batchWeek
     toFetch$chromPol<-testInj$chromPol
     toFetch$projName<-projName
+    toFetch$nSampsMonitor<-Config$nSampsMonitor
     H0Object$LMPeaks <- fetchLMRefDF(dbName=dbName, toFetch=toFetch)
     H0Object$IPOnLM <- fetchIPOnLM(dbName=dbName, toFetch=toFetch)
   }
@@ -924,6 +925,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   testInj$LMtoSub <- list()
   testInj$LMtoSub[[1]] <- as.data.frame(LM_in_sample)
   testInj$nPeaks <- nrow(chromPeaks(xdata_cwp))
+  testInj$nSampsMonitor <- Config$nSampsMonitor
 
   ####################################
   ##Slack message for latest sample###
@@ -975,6 +977,5 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   check_LM_info[check_LM_info=="FALSE"] <- ""
 
 
-  submitLMQualityToDB(testInj=testInj, dbName=dbName, check_LM_info)
-
+  submitLMQualityToDB(testInj=testInj, dbName=dbName, qualityTable=check_LM_info)
 }

@@ -61,7 +61,7 @@ examineDataUI<-function(id){
           ),
           tabPanel(
             "FWHM outlier plot",
-            plotOutput(ns("plotFWHMOutlier")),
+            plotlyOutput(ns("plotFWHMOutlier")),
             br(),
             br()
           ),
@@ -79,7 +79,7 @@ examineDataUI<-function(id){
           ),
           tabPanel(
             "DataPoints outlier plot",
-            plotlyOutput(ns("plotDatapointsOutlier")),
+            plotlyOutput(ns("plotDataPointsOutlier")),
             br(),
             br()
           ),
@@ -270,15 +270,24 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$examineData$config$nSampsMonitor){
+            toRemove <- r$examineData$config$nSampsMonitor
+          } else {
+            toRemove <- 0
+          }
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'status')[,-1]
+                          value.var = 'status')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
           dbDisconnect(conn)
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
           showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -310,15 +319,25 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$examineData$config$nSampsMonitor){
+            toRemove <- r$examineData$config$nSampsMonitor
+          } else {
+            toRemove <- 0
+          }
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'lmIntOutliers')[,-1]
+                          value.var = 'lmIntOutliers')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
+
           dbDisconnect(conn)
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
           showNotification("Rendering Int outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -350,15 +369,24 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$examineData$config$nSampsMonitor){
+            toRemove <- r$examineData$config$nSampsMonitor
+          } else {
+            toRemove <- 0
+          }
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'lmRTOutliers')[,-1]
+                          value.var = 'lmRTOutliers')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
           dbDisconnect(conn)
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
           showNotification("Rendering RT outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -390,15 +418,24 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$examineData$config$nSampsMonitor){
+            toRemove <- r$examineData$config$nSampsMonitor
+          } else {
+            toRemove <- 0
+          }
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'lmHeightOutliers')[,-1]
+                          value.var = 'lmHeightOutliers')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
           dbDisconnect(conn)
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
           showNotification("Rendering Peak height outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -430,15 +467,24 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$examineData$config$nSampsMonitor){
+            toRemove <- r$examineData$config$nSampsMonitor
+          } else {
+            toRemove <- 0
+          }
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'lmFWHMOutliers')[,-1]
+                          value.var = 'lmFWHMOutliers')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
           dbDisconnect(conn)
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
           showNotification("Rendering FWHM outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -471,15 +517,24 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$examineData$config$nSampsMonitor){
+            toRemove <- r$examineData$config$nSampsMonitor
+          } else {
+            toRemove <- 0
+          }
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'lmTFOutliers')[,-1]
+                          value.var = 'lmTFOutliers')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
           dbDisconnect(conn)
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
           showNotification("Rendering Tail. factor outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -512,15 +567,24 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$examineData$config$nSampsMonitor){
+            toRemove <- r$examineData$config$nSampsMonitor
+          } else {
+            toRemove <- 0
+          }
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'lmSNOutliers')[,-1]
+                          value.var = 'lmSNOutliers')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
           dbDisconnect(conn)
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
           showNotification("Rendering Sign./Noise outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -553,13 +617,24 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$examineData$config$nSampsMonitor){
+            toRemove <- r$examineData$config$nSampsMonitor
+          } else {
+            toRemove <- 0
+          }
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'lmDPOutliers')[,-1]
+                          value.var = 'lmDPOutliers')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
           dbDisconnect(conn)
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
+
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
           showNotification("Rendering Data Point outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -592,15 +667,24 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$examineData$config$nSampsMonitor){
+            toRemove <- r$examineData$config$nSampsMonitor
+          } else {
+            toRemove <- 0
+          }
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'lmNoise')[,-1]
+                          value.var = 'lmNoise')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
           dbDisconnect(conn)
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
           showNotification("Rendering Noise outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -621,6 +705,7 @@ examineDataServer<-function(id,r){
         req(input$chromPol)
         req(r$examineData$sampType)
         req(r$examineData$chromPol)
+        req(r$examineData$enoughSamples)
 
         p <- plot_ly()
 
@@ -643,7 +728,7 @@ examineDataServer<-function(id,r){
         }
 
         # If not first batch, printing lines with different colors based on batch belonging
-        if(length(r$examineData$batchFreq)!=1){
+        if (length(r$examineData$batchFreq)!=1){
           sampsSum = 1
 
           for(i in 1:length(r$examineData$batchFreq)){
@@ -697,6 +782,7 @@ examineDataServer<-function(id,r){
         req(input$chromPol)
         req(r$examineData$sampType)
         req(r$examineData$chromPol)
+        req(r$examineData$enoughSamples)
 
         p <- plot_ly()
 
@@ -773,6 +859,7 @@ examineDataServer<-function(id,r){
         req(input$chromPol)
         req(r$examineData$sampType)
         req(r$examineData$chromPol)
+        req(r$examineData$enoughSamples)
 
         p <- plot_ly()
 
@@ -849,6 +936,7 @@ examineDataServer<-function(id,r){
         req(input$chromPol)
         req(r$examineData$sampType)
         req(r$examineData$chromPol)
+        req(r$examineData$enoughSamples)
 
         p <- plot_ly()
 
@@ -977,6 +1065,7 @@ examineDataServer<-function(id,r){
 
 
             if(r$examineData$nSamps > 2){
+              r$examineData$enoughSamples <- 1
               r$examineData$batchFreq <- names(table(r$examineData$sampleLevelDT$batchWeek))
               r$examineData$batchFreq <- r$examineData$batchFreq[order(match(r$examineData$batchFreq, unique(r$examineData$sampleLevelDT$batchWeek)))]
               r$examineData$nBatches <- length(r$examineData$batchFreq)
@@ -985,14 +1074,12 @@ examineDataServer<-function(id,r){
               for(i in 1:length(r$examineData$batchFreq)){
                 r$examineData$sampsInBatch[i]<- as.integer(table(r$examineData$sampleLevelDT$batchWeek)[i])
               }
-              print(r$examineData$sampsInBatch)
-              print(names(table(r$examineData$sampleLevelDT$batchWeek)))
 
               names(r$examineData$sampsInBatch) <- names(table(r$examineData$sampleLevelDT$batchWeek))
               r$examineData$sampsInBatch <- r$examineData$sampsInBatch[order(match(names(r$examineData$sampsInBatch), r$examineData$batchFreq))]
 
             } else {
-              r$examineData$enoughSamples<-0
+              # r$examineData$enoughSamples<-0
               # r$examineData$nSamps<-nSamps
 
               if(r$examineData$nSamps > 0){

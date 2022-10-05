@@ -154,6 +154,7 @@ readConfigFile <- function(configFilePath){
   statusTIC<-as.integer(txtobj[260])
   statusnLM<-as.integer(txtobj[262])
   statusLim<-as.numeric(txtobj[264])
+  nSampsMonitor<-as.numeric(txtobj[266])
 
 
   config <- list("dir" = dir,
@@ -308,7 +309,10 @@ readConfigFile <- function(configFilePath){
                  "statusIPO"=statusIPO,
                  "statusNPeaks"=statusNPeaks,
                  "statusTIC"=statusTIC,
-                 "statusLim"=statusLim
+                 "statusLim"=statusLim,
+
+                 #nSamps to monitor
+                 "nSampsMonitor"=nSampsMonitor
                )
 
   return(config)

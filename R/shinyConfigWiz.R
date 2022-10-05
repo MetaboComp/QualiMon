@@ -200,10 +200,13 @@ configWizServer<-function(id,r){
           title="Step 9/13",
 
           div(style = "height:140px;",
-            tags$b("9. Input accepted PPM and RT deviation for landmarks:"),
+            tags$b("9a. Input accepted PPM and RT deviation for landmarks:"),
             br(),
             column(width=4, numericInput(ns('dPPM'), label="Set dPPM", 5, max=100)),
-            column(width=8, numericInput(ns('dRT'), label="Set RT window (s)", 30, max=120))
+            column(width=8, numericInput(ns('dRT'), label="Set RT window (s)", 30, max=120)),
+            br(),
+            tags$b("9b. Input number injections to monitor at most:"),
+            column(width=12, numericInput(ns('nSampMonitor'), 500))
           )
         )
       })
@@ -492,6 +495,7 @@ configWizServer<-function(id,r){
         handlerExpr={
           r$configWiz$dPPM <- input$dPPM
           r$configWiz$dRT  <- input$dRT
+          r$configWiz$nSampMonitor <- input$nSampMonitor
         }
       )
 
@@ -871,7 +875,9 @@ configWizServer<-function(id,r){
             configOutput[262,]<-"1"
             configOutput[263,]<-"--StatusLim--"
             configOutput[264,]<-"0.2"
-            configOutput[265,]<-"" #For readLine not to freak out :)
+            configOutput[265,]<-"--nSampMonitor--"
+            configOutput[266,]<-as.character(input$nSampsMonitor)
+            configOutput[267,]<-"" #For readLine not to freak out :)
           })
 
 
