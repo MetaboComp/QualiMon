@@ -13,7 +13,9 @@ fetchIPOnLM<-function(dbName="Test.db", toFetch){
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
 
-  s1 <- sprintf("SELECT DISTINCT injID FROM [IPOnLMs] l")
+  s1 <- sprintf("SELECT DISTINCT injID FROM [IPOnLMs] l WHERE l.type='%s' AND l.chromPol='%s'",
+                toFetch$type,
+                toFetch$chromPol)
   distInjID <- as.vector(unlist(dbGetQuery(conn, s1)))
   distInjID <- ifelse(is.na(distInjID), 0, distInjID)
 

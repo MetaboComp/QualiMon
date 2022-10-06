@@ -23,9 +23,10 @@ submitLMQualityToDB <- function(testInj, dbName, qualityTable){
                               testInj$chromPol,
                               testInj$type)
 
-  sampleIterQuery <- sprintf("SELECT MAX(q.sampleIter) FROM [%s] q WHERE q.chromPol='%s'",
+  sampleIterQuery <- sprintf("SELECT MAX(q.sampleIter) FROM [%s] q WHERE q.chromPol='%s' AND q.type='%s'",
                             paste0("QTable_",testInj$matrix),
-                            testInj$chromPol)
+                            testInj$chromPol,
+                            testInj$type)
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
   injIDs <- as.vector(unlist(dbGetQuery(conn, fetchQuery)))
@@ -47,10 +48,6 @@ submitLMQualityToDB <- function(testInj, dbName, qualityTable){
 
     sampNumb = sampNumb+1
   }
-
-  print(qualityTable)
-  print(sampNumb)
-  print(sampIter)
 
   qualityTable <- cbind(injIDs, qualityTable[,-c(1, 16:23)]) #Removing sample specific columns and filepath
   colnames(qualityTable)[1] <- c("injID")
