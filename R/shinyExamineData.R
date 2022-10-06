@@ -257,7 +257,7 @@ examineDataServer<-function(id,r){
         req(r$examineData$sampType)
         req(r$examineData$chromPol)
 
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0", #Changed
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
                       paste0("QTable_",r$examineData$config$sampleMatrix),
                       r$examineData$chromPol,
                       r$examineData$sampType)
@@ -286,8 +286,9 @@ examineDataServer<-function(id,r){
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
-
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
+          
+          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -1061,14 +1062,26 @@ examineDataServer<-function(id,r){
             conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
             r$examineData$sampleLevelDT<-as.data.table(dbGetQuery(conn, s1))
             r$examineData$nSamps <- as.integer(dbGetQuery(conn, s2))
+            
+            print(r$examineData$sampleLevelDT)
+            
+            # if(r$examineData$nSamps > (r$examineData$config$nSampsMonitor-1)){
+              # r$examineData$sampleLevelDT[,sampleNumber:=c(1:r$examineData$config$nSampsMonitor)]
+            # } else {
+              # r$examineData$sampleLevelDT[,sampleNumber:=c(1:r$examineData$nSamps)]
+            # }
+            
             dbDisconnect(conn)
 
-
+            print("Hej 1")
+            
             if(r$examineData$nSamps > 2){
               r$examineData$enoughSamples <- 1
+              print("Hej 2")
               r$examineData$batchFreq <- names(table(r$examineData$sampleLevelDT$batchWeek))
               r$examineData$batchFreq <- r$examineData$batchFreq[order(match(r$examineData$batchFreq, unique(r$examineData$sampleLevelDT$batchWeek)))]
               r$examineData$nBatches <- length(r$examineData$batchFreq)
+              print(" Hej 3")
 
               r$examineData$sampsInBatch<-rep(0,length(r$examineData$batchFreq))
               for(i in 1:length(r$examineData$batchFreq)){

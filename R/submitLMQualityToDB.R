@@ -52,12 +52,16 @@ submitLMQualityToDB <- function(testInj, dbName, qualityTable){
   qualityTable <- cbind(injIDs, qualityTable[,-c(1, 16:23)]) #Removing sample specific columns and filepath
   colnames(qualityTable)[1] <- c("injID")
   #SampNumb taking first two solo samples of a matrix into account
-  if(sampNumb < testInj$nSampsMonitor){
+  if(sampNumb < 3){
     qualityTable$sampleNumber <- sampNumb
-  } else if(sampNumb==testInj$nSampsMonitor){
-    qualityTable$sampleNumber <- c(1:testInj$nSampsMonitor)
+  } else if(sampNumb==3){
+    qualityTable$sampleNumber <- c(1:3)
   } else {
-    qualityTable$sampleNumber <- c((sampNumb-(testInj$nSampsMonitor-1)):sampNumb)
+    if(sampNumb-(testInj$nSampsMonitor-1) <= 0){
+      
+    } else {
+      qualityTable$sampleNumber <- c((sampNumb-(testInj$nSampsMonitor-1)):sampNumb)
+    }
   }
   qualityTable$sampleIter <- rep(as.integer(sampIter), nrow(qualityTable))
 
