@@ -270,24 +270,32 @@ examineDataServer<-function(id,r){
         conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
 
         if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
+          # nRows <- max(as.data.table(dbGetQuery(conn,s1))$sampleNumber)
           nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$examineData$config$nSampsMonitor){
             toRemove <- r$examineData$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
           } else {
             toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
           }
 
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
-                          value.var = 'status')[c((nRows-(toRemove-1)):nRows), (nCols-ifelse(toRemove==0, 0, (toRemove-2))):(nCols+1)]
+                          value.var = 'status')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
           dbDisconnect(conn)
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
-          
-          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+
+          print(length(which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)))
+          print(length(r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]))
+          print(toShow)
+
           rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
@@ -338,7 +346,8 @@ examineDataServer<-function(id,r){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
+          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering Int outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -387,7 +396,8 @@ examineDataServer<-function(id,r){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
+          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering RT outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -436,7 +446,8 @@ examineDataServer<-function(id,r){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
+          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering Peak height outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -485,7 +496,8 @@ examineDataServer<-function(id,r){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
+          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering FWHM outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -535,7 +547,8 @@ examineDataServer<-function(id,r){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
+          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering Tail. factor outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -585,7 +598,8 @@ examineDataServer<-function(id,r){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
+          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering Sign./Noise outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -635,7 +649,8 @@ examineDataServer<-function(id,r){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
+          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering Data Point outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -685,7 +700,8 @@ examineDataServer<-function(id,r){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[c((nRows-toRemove):nRows)]
+          ifelse(nRows-toRemove <= 0, toShow <- c(1:nrows(dcastObj)), toShow <- c((1+nRows-toRemove):nRows))
+          rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering Noise outlier Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
         } else {
@@ -1062,19 +1078,17 @@ examineDataServer<-function(id,r){
             conn <- dbConnect(RSQLite::SQLite(), r$examineData$config$dbName)
             r$examineData$sampleLevelDT<-as.data.table(dbGetQuery(conn, s1))
             r$examineData$nSamps <- as.integer(dbGetQuery(conn, s2))
-            
-            print(r$examineData$sampleLevelDT)
-            
+
             # if(r$examineData$nSamps > (r$examineData$config$nSampsMonitor-1)){
               # r$examineData$sampleLevelDT[,sampleNumber:=c(1:r$examineData$config$nSampsMonitor)]
             # } else {
               # r$examineData$sampleLevelDT[,sampleNumber:=c(1:r$examineData$nSamps)]
             # }
-            
+
             dbDisconnect(conn)
 
             print("Hej 1")
-            
+
             if(r$examineData$nSamps > 2){
               r$examineData$enoughSamples <- 1
               print("Hej 2")
