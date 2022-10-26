@@ -155,7 +155,7 @@ readConfigFile <- function(configFilePath){
   statusnLM<-as.integer(txtobj[262])
   statusLim<-as.numeric(txtobj[264])
   nSampsMonitor<-as.numeric(txtobj[266])
-  doCheckProj<-as.character(txtObj[268])
+  doCheckProj<-as.character(txtobj[268])
 
 
   config <- list("dir" = dir,
