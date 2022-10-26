@@ -28,6 +28,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
   minFileSize<-Config$minFileSize
   ltQCname<-Config$ltQCname
   fileFormat<-Config$fileFormat
+  projToCheck <- Config$doCheckProj
 
   #Check if raw file folder exists, otherwise exit function
   if (!file.exists(dir)){
@@ -157,7 +158,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
 
       #Calling "checkLM" to compare landmarks in the last .mzML file to be created with the landmark-information in the DB
       #Checking if filename conforms to file naming standard
-      if(length(strsplit(Sample$filenames, split='_')[[1]])==6){
+      if(length(strsplit(Sample$filenames, split='_')[[1]])==6 && projectID %in% doCheckProj){
         #Checking if chromPol of sample is available in DB
         currChromPol <- paste0(strsplit(Sample$filenames, split='_')[[1]][3], "_", strsplit(Sample$filenames, split='_')[[1]][4])
         convChromPol <- switch(currChromPol, "RP_POS"="RP", "RP_NEG"="RN", "HILIC_POS"="HP", "HILIC_NEG"="HN")

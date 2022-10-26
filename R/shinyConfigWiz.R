@@ -206,7 +206,7 @@ configWizServer<-function(id,r){
             column(width=8, numericInput(ns('dRT'), label="Set RT window (s)", 30, max=120)),
             br(),
             tags$b("9b. Input number injections to monitor at most:"),
-            column(width=12, numericInput(ns('nSampMonitor'), 500))
+            column(width=12, numericInput(ns('nSampMonitor'), label="", value=500))
           )
         )
       })

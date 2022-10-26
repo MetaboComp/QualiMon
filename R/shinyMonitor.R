@@ -98,37 +98,37 @@ monitorUI<-function(id){
           )
         )
       )
-    ),
-
-    fluidRow(
-      tabBox(
-        title="Status breakdown",
-        width=12,
-
-        tabPanel(
-          "10 last samples",
-          plotlyOutput(ns("badSample_10"))
-        ),
-        tabPanel(
-          "All bad samples",
-          fluidRow(
-            column(
-              width=8,
-              plotlyOutput(ns("badSample_all.1"))
-            ),
-            column(
-              width=4,
-              plotlyOutput(ns("badSample_all.2"))
-            )
-          )
-        ),
-        tabPanel(
-          "Choose any sample",
-          plotOutput(ns("badSample_any"))
-        )
-
-      )
-    )
+    )#,
+#
+#     fluidRow(
+#       tabBox(
+#         title="Status breakdown",
+#         width=12,
+#
+#         tabPanel(
+#           "10 last samples",
+#           plotlyOutput(ns("badSample_10"))
+#         ),
+#         tabPanel(
+#           "All bad samples",
+#           fluidRow(
+#             column(
+#               width=8,
+#               plotlyOutput(ns("badSample_all.1"))
+#             ),
+#             column(
+#               width=4,
+#               plotlyOutput(ns("badSample_all.2"))
+#             )
+#           )
+#         ),
+#         tabPanel(
+#           "Choose any sample",
+#           plotOutput(ns("badSample_any"))
+#         )
+#
+#       )
+#     )
   )
 
 
@@ -293,13 +293,55 @@ monitorServer<-function(id,r){
 
       #Status plot - Actual plot when enough samples
       output$plotStatus<-renderPlotly({
-        dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'status')[,-1]
-        # dcastObj<-t(apply(dcastObj, 1, as.double))
-        if(ncol(dcastObj)==1){
-          dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        # dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'status')[,-1]
+        # # dcastObj<-t(apply(dcastObj, 1, as.double))
+        # if(ncol(dcastObj)==1){
+        #   dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        # }
+        # rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
+        # heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+        if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            toRemove <- r$configWiz$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
+          } else {
+            toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
+          }
+
+          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
+                          sampleNumber~sampleIter,
+                          value.var = 'status')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          if(ncol(dcastObj)==1){
+            dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+          }
+
+          dbDisconnect(conn)
+
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+        } else {
+          dbDisconnect(conn)
+          NULL
         }
-        rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
       })
 
       ########################
@@ -314,13 +356,45 @@ monitorServer<-function(id,r){
       })
 
       output$plotIntOutlier<-renderPlotly({
-        req(r$monitor$plotData$DT)
-        dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'lmIntOutliers')[,-1]
-        if(ncol(dcastObj)==1){
-          dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+        if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            toRemove <- r$configWiz$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
+          } else {
+            toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
+          }
+
+          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmIntOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          if(ncol(dcastObj)==1){
+            dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+          }
+
+          dbDisconnect(conn)
+
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          showNotification("Rendering Int Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+        } else {
+          dbDisconnect(conn)
+          NULL
         }
-        rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        heatmaply(dcastObj, dendrogram="none" , showticklabels=c(F,F))
       })
 
       ########################
@@ -335,13 +409,44 @@ monitorServer<-function(id,r){
       })
 
       output$plotRTOutlier<-renderPlotly({
-        req(r$monitor$plotData$DT)
-        dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'lmRTOutliers')[,-1]
-        if(ncol(dcastObj)==1){
-          dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+        if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            toRemove <- r$configWiz$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
+          } else {
+            toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
+          }
+
+          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmRTOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          if(ncol(dcastObj)==1){
+            dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+          }
+          dbDisconnect(conn)
+
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          showNotification("Rendering RT Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+        } else {
+          dbDisconnect(conn)
+          NULL
         }
-        rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F))
       })
 
       ##########################
@@ -356,13 +461,44 @@ monitorServer<-function(id,r){
       })
 
       output$plotHeightOutlier<-renderPlotly({
-        req(r$monitor$plotData$DT)
-        dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'lmHeightOutliers')[,-1]
-        if(ncol(dcastObj)==1){
-          dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+        if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            toRemove <- r$configWiz$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
+          } else {
+            toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
+          }
+
+          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmHeightOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          if(ncol(dcastObj)==1){
+            dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+          }
+          dbDisconnect(conn)
+
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          showNotification("Rendering Height Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+        } else {
+          dbDisconnect(conn)
+          NULL
         }
-        rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F))
       })
 
       ########################
@@ -377,13 +513,44 @@ monitorServer<-function(id,r){
       })
 
       output$plotFWHMOutlier<-renderPlotly({
-        req(r$monitor$plotData$DT)
-        dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'lmFWHMOutliers')[,-1]
-        if(ncol(dcastObj)==1){
-          dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+        if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            toRemove <- r$configWiz$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
+          } else {
+            toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
+          }
+
+          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmFWHMOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          if(ncol(dcastObj)==1){
+            dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+          }
+          dbDisconnect(conn)
+
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          showNotification("Rendering FWHM Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+        } else {
+          dbDisconnect(conn)
+          NULL
         }
-        rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F))
       })
 
       ########################
@@ -398,13 +565,44 @@ monitorServer<-function(id,r){
       })
 
       output$plotTFOutlier<-renderPlotly({
-        req(r$monitor$plotData$DT)
-        dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'lmTFOutliers')[,-1]
-        if(ncol(dcastObj)==1){
-          dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+        if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            toRemove <- r$configWiz$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
+          } else {
+            toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
+          }
+
+          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmTFOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          if(ncol(dcastObj)==1){
+            dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+          }
+          dbDisconnect(conn)
+
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          showNotification("Rendering TF Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+        } else {
+          dbDisconnect(conn)
+          NULL
         }
-        rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F))
       })
 
       ########################
@@ -419,13 +617,44 @@ monitorServer<-function(id,r){
       })
 
       output$plotSNOutlier<-renderPlotly({
-        req(r$monitor$plotData$DT)
-        dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'lmSNOutliers')[,-1]
-        if(ncol(dcastObj)==1){
-          dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+        if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            toRemove <- r$configWiz$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
+          } else {
+            toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
+          }
+
+          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmSNOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          if(ncol(dcastObj)==1){
+            dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+          }
+          dbDisconnect(conn)
+
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          showNotification("Rendering SN Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+        } else {
+          dbDisconnect(conn)
+          NULL
         }
-        rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F))
       })
 
       ###############################
@@ -440,13 +669,44 @@ monitorServer<-function(id,r){
       })
 
       output$plotDataPointsOutlier<-renderPlotly({
-        req(r$monitor$plotData$DT)
-        dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'lmDPOutliers')[,-1]
-        if(ncol(dcastObj)==1){
-          dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+        if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            toRemove <- r$configWiz$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
+          } else {
+            toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
+          }
+
+          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmDPOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          if(ncol(dcastObj)==1){
+            dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+          }
+          dbDisconnect(conn)
+
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          showNotification("Rendering DataPoints Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+        } else {
+          dbDisconnect(conn)
+          NULL
         }
-        rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F))
       })
 
       ##########################
@@ -461,13 +721,44 @@ monitorServer<-function(id,r){
       })
 
       output$plotNoiseOutlier<-renderPlotly({
-        req(r$monitor$plotData$DT)
-        dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'lmNoise')[,-1]
-        if(ncol(dcastObj)==1){
-          dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
+                      paste0("QTable_",r$configWiz$config$sampleMatrix),
+                      r$monitor$chromPolFormat,
+                      r$monitor$sampType)
+
+        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+        if(as.integer(dbGetQuery(conn, s2)) > 0){
+          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            toRemove <- r$configWiz$config$nSampsMonitor
+            toShow <- c((nCols-toRemove+3):(nCols+2))
+            startNumb <- nCols-(toRemove-1)
+          } else {
+            toRemove <- 0
+            toShow <- c(1:nCols)
+            startNumb <- 1
+          }
+
+          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmNoise')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          if(ncol(dcastObj)==1){
+            dcastObj<-cbind(dcastObj,c(NA,NA,NA))
+          }
+          dbDisconnect(conn)
+
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          showNotification("Rendering Noise Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+        } else {
+          dbDisconnect(conn)
+          NULL
         }
-        rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F))
       })
 
       ######################
@@ -1057,6 +1348,7 @@ monitorServer<-function(id,r){
                           r$monitor$sampType)
           }
 
+          test <- Sys.time()
 
           conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
           visDataPermDT<-as.data.table(dbGetQuery(conn, s1))
@@ -1064,17 +1356,16 @@ monitorServer<-function(id,r){
           nSamps <- as.integer(dbGetQuery(conn, s3))
           dbDisconnect(conn)
 
+          print(paste0("#1: ", Sys.time()-test))
+
           #Collecting number of LMs from DB
           if(!is.null(r$monitor$chromPolFormat)){
             r$monitor$nLMs <- nrow(fetchLM(r$configWiz$config$dbName, r$monitor$chromPolFormat))
           }
 
-          test <- Sys.time()
-
           if(nrow(visDataPermDT)>0){
 
             #### MOVE THIS SHIT INTO SQL ####
-            print(paste0("#1: ", Sys.time()-test))
             r$monitor$batchFreq <- names(table(sampleLevelDT$batchWeek))
             r$monitor$batchFreq <- r$monitor$batchFreq[order(match(r$monitor$batchFreq, unique(sampleLevelDT$batchWeek)))]
             r$monitor$nSamps<- nSamps#max(visDataPermDT[,.(sampleNumber)])
@@ -1135,8 +1426,8 @@ monitorServer<-function(id,r){
 
               print(paste0("#3: ", Sys.time()-test))
 
-              r$monitor$plotData=list(#"DTunique"=sampleLevelDT,
-                                      "DT"=visDataPermDT,
+              r$monitor$plotData=list("DTunique"=sampleLevelDT,
+                                      #"DT"=visDataPermDT,
                                       "sampsInBatch"=sampsInBatch,
                                       "sampleNames" = sampleNames,
                                       "batchSampsIncr"=batchSampsIncr,

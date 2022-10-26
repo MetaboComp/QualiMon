@@ -11,11 +11,8 @@ runBatchUI<-function(id){
         uiOutput(ns('chooseConfigUI'))
 
       ),
-
-
     )
   )
-
 }
 
 runBatchServer<-function(id,r){
@@ -223,6 +220,10 @@ runBatchServer<-function(id,r){
                                      easyClose=F
                                    )
                                  )
+                                 r$runBatch$running <- F
+                               },
+                               onFulfilled=function(){
+                                 r$runBatch$running <- F
                                }
                              )
               NULL
