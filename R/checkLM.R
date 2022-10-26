@@ -929,6 +929,8 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
 
   ####################################
   ##Slack message for latest sample###
+  print(Config$slackToken)
+  print(Config$slackChannelHard)
   if(slackOn==TRUE && Config$slackToken != "" && Config$slackChannelHard != ""){
 
     slackChannelHard<-Config$slackChannelHard
