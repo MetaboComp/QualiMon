@@ -335,6 +335,7 @@ monitorServer<-function(id,r){
 
           dbDisconnect(conn)
 
+          print(r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)])
           rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
           showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")

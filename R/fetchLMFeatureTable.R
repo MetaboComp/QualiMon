@@ -16,9 +16,19 @@ fetchLMFeatureTable <- function(dbName="NameOfDB.db", chromPol, projName, sampTy
   landmarks[,2]<-as.double(landmarks[,2])
   landmarks[,3]<-as.double(landmarks[,3])
 
+  nLMs <- nrow(landmarks)
+
   #Setting up objects for collecting data to build tables
   reportObject<-list()
   toFetch<-list()
+
+  s1 <- sprintf("SELECT DISTINCT injID FROM [IPOnLMs] l WHERE l.type='%s' AND l.chromPol='%s'",
+                sampType,
+                chromPol)
+  conn <- dbConnect(RSQLite::SQLite(),dbName)
+  toFetch$nSampsMonitor <- length(unlist(dbGetQuery(conn,s1)))+10
+  dbDisconnect(conn)
+
 
   #Checking if sQC or sample data to be collected
   if (sampType == "sQC"){
@@ -57,7 +67,6 @@ fetchLMFeatureTable <- function(dbName="NameOfDB.db", chromPol, projName, sampTy
   # LM_Ref$noise <- as.integer(reportObject$IPOnLM[,6])
   LM_Ref$name<-as.character(reportObject$IPOnLM[,6])
 
-
   colnames(LM_Ref$intensity)<-landmarks$LMID
   rownames(LM_Ref$intensity)<-unique(reportObject$LMPeaks$injID)
   colnames(LM_Ref$RT)<-landmarks$LMID
@@ -77,18 +86,27 @@ fetchLMFeatureTable <- function(dbName="NameOfDB.db", chromPol, projName, sampTy
   colnames(LM_Ref$nLMMatch)<-landmarks$LMID
   rownames(LM_Ref$nLMMatch)<-unique(reportObject$LMPeaks$injID)
 
+
   #Filling in intensity and RT tables
   for(i in 1:length(LM_Ref$intensity[,1])){
-    LM_Ref$intensity[i,]<-reportObject$LMPeaks$int[which(reportObject$LMPeaks$injID==rownames(LM_Ref$intensity)[i])]
-    LM_Ref$RT[i,]<-reportObject$LMPeaks$RT[which(reportObject$LMPeaks$injID==rownames(LM_Ref$RT)[i])]
-    LM_Ref$nLMMatch[i,]<-reportObject$LMPeaks$nLMMatch[which(reportObject$LMPeaks$injID==rownames(LM_Ref$nLMMatch)[i])]
-    LM_Ref$height[i,]<-reportObject$LMPeaks$height[which(reportObject$LMPeaks$injID==rownames(LM_Ref$height)[i])]
-    LM_Ref$fwhm[i,]<-reportObject$LMPeaks$fwhm[which(reportObject$LMPeaks$injID==rownames(LM_Ref$fwhm)[i])]
-    LM_Ref$tf[i,]<-reportObject$LMPeaks$tf[which(reportObject$LMPeaks$injID==rownames(LM_Ref$tf)[i])]
-    LM_Ref$sn[i,]<-reportObject$LMPeaks$sn[which(reportObject$LMPeaks$injID==rownames(LM_Ref$sn)[i])]
-    LM_Ref$noise[i,]<-reportObject$LMPeaks$noise[which(reportObject$LMPeaks$injID==rownames(LM_Ref$noise)[i])]
-    LM_Ref$dataPoints[i,]<-reportObject$LMPeaks$dataPoints[which(reportObject$LMPeaks$injID==rownames(LM_Ref$dataPoints)[i])]
-
+    # LM_Ref$intensity[i,]<-reportObject$LMPeaks$int[which(reportObject$LMPeaks$injID==rownames(LM_Ref$intensity)[i])]
+    # LM_Ref$RT[i,]<-reportObject$LMPeaks$RT[which(reportObject$LMPeaks$injID==rownames(LM_Ref$RT)[i])]
+    # LM_Ref$nLMMatch[i,]<-reportObject$LMPeaks$nLMMatch[which(reportObject$LMPeaks$injID==rownames(LM_Ref$nLMMatch)[i])]
+    # LM_Ref$height[i,]<-reportObject$LMPeaks$height[which(reportObject$LMPeaks$injID==rownames(LM_Ref$height)[i])]
+    # LM_Ref$fwhm[i,]<-reportObject$LMPeaks$fwhm[which(reportObject$LMPeaks$injID==rownames(LM_Ref$fwhm)[i])]
+    # LM_Ref$tf[i,]<-reportObject$LMPeaks$tf[which(reportObject$LMPeaks$injID==rownames(LM_Ref$tf)[i])]
+    # LM_Ref$sn[i,]<-reportObject$LMPeaks$sn[which(reportObject$LMPeaks$injID==rownames(LM_Ref$sn)[i])]
+    # LM_Ref$noise[i,]<-reportObject$LMPeaks$noise[which(reportObject$LMPeaks$injID==rownames(LM_Ref$noise)[i])]
+    # LM_Ref$dataPoints[i,]<-reportObject$LMPeaks$dataPoints[which(reportObject$LMPeaks$injID==rownames(LM_Ref$dataPoints)[i])]
+    LM_Ref$intensity[i,]<-reportObject$LMPeaks$int[((i*nLMs)-(nLMs-1)):(i*nLMs)]
+    LM_Ref$RT[i,]<-reportObject$LMPeaks$RT[((i*nLMs)-(nLMs-1)):(i*nLMs)]
+    LM_Ref$nLMMatch[i,]<-reportObject$LMPeaks$nLMMatch[((i*nLMs)-(nLMs-1)):(i*nLMs)]
+    LM_Ref$height[i,]<-reportObject$LMPeaks$height[((i*nLMs)-(nLMs-1)):(i*nLMs)]
+    LM_Ref$fwhm[i,]<-reportObject$LMPeaks$fwhm[((i*nLMs)-(nLMs-1)):(i*nLMs)]
+    LM_Ref$tf[i,]<-reportObject$LMPeaks$tf[((i*nLMs)-(nLMs-1)):(i*nLMs)]
+    LM_Ref$sn[i,]<-reportObject$LMPeaks$sn[((i*nLMs)-(nLMs-1)):(i*nLMs)]
+    LM_Ref$noise[i,]<-reportObject$LMPeaks$noise[((i*nLMs)-(nLMs-1)):(i*nLMs)]
+    LM_Ref$dataPoints[i,]<-reportObject$LMPeaks$dataPoints[((i*nLMs)-(nLMs-1)):(i*nLMs)]
   }
 
   return(LM_Ref)

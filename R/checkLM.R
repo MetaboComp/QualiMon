@@ -929,7 +929,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
 
   ####################################
   ##Slack message for latest sample###
-  if(slackOn==TRUE && !is.null(Config$slackToken) && !is.null(Config$slackChannelHard)){
+  if(slackOn==TRUE && Config$slackToken != "" && Config$slackChannelHard != ""){
 
     slackChannelHard<-Config$slackChannelHard
     slackChannelLog<-Config$slackChannelLog
@@ -943,7 +943,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
 
     ##Look over if status should be percent of total score-based
     ##Look over if should have other slackMSGs based on other parameters
-    if(Status>Config$statusLim){
+    if(Status>Config$statusLim || testInj$nLMs < HardLimnLMs){
       slackMSG<-paste("Warning!!",testInj$filePath  ,"is likely abnormal!!")
       slackr_msg(txt=slackMSG, channel=slackChannelHard, username="LM_Bot", token=Config$slackToken)
     }

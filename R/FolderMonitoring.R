@@ -167,7 +167,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
           Sample$sample <- strsplit(Sample$filenames, split='_')[[1]][5]
 
           ####CheckLM####
-          checkLM(filePath=paste0(mzMLdir, "/", Sample$filenames), dbName=DB, instrument = instrument, projName=projectID, sampleMatrix=sampleMatrix, Config=Config, dPPM = dPPM, rtWin=rtWin, noCheck = noCheck, alpha = alpha, slackOn = F)
+          checkLM(filePath=paste0(mzMLdir, "/", Sample$filenames), dbName=DB, instrument = instrument, projName=projectID, sampleMatrix=sampleMatrix, Config=Config, dPPM = dPPM, rtWin=rtWin, noCheck = noCheck, alpha = alpha, slackOn = T)
         } else {
           # cat('\nNo LaMas for the chromPol of the current sample. Sample not submitted to DB or monitored.')
         }
