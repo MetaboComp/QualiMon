@@ -99,36 +99,36 @@ monitorUI<-function(id){
         )
       )
     )#,
-#
-#     fluidRow(
-#       tabBox(
-#         title="Status breakdown",
-#         width=12,
-#
-#         tabPanel(
-#           "10 last samples",
-#           plotlyOutput(ns("badSample_10"))
-#         ),
-#         tabPanel(
-#           "All bad samples",
-#           fluidRow(
-#             column(
-#               width=8,
-#               plotlyOutput(ns("badSample_all.1"))
-#             ),
-#             column(
-#               width=4,
-#               plotlyOutput(ns("badSample_all.2"))
-#             )
-#           )
-#         ),
-#         tabPanel(
-#           "Choose any sample",
-#           plotOutput(ns("badSample_any"))
-#         )
-#
-#       )
-#     )
+    #
+    #     fluidRow(
+    #       tabBox(
+    #         title="Status breakdown",
+    #         width=12,
+    #
+    #         tabPanel(
+    #           "10 last samples",
+    #           plotlyOutput(ns("badSample_10"))
+    #         ),
+    #         tabPanel(
+    #           "All bad samples",
+    #           fluidRow(
+    #             column(
+    #               width=8,
+    #               plotlyOutput(ns("badSample_all.1"))
+    #             ),
+    #             column(
+    #               width=4,
+    #               plotlyOutput(ns("badSample_all.2"))
+    #             )
+    #           )
+    #         ),
+    #         tabPanel(
+    #           "Choose any sample",
+    #           plotOutput(ns("badSample_any"))
+    #         )
+    #
+    #       )
+    #     )
   )
 
 
@@ -186,17 +186,17 @@ monitorServer<-function(id,r){
             ),
             br(),
             # if(!is.null(r$monitor$methods)){
-              tagList(
-                fluidRow(
-                  column(
-                    width=6,
-                    selectInput(ns("sampType"), "Injection type", choices=c("sample","sQC"), selected=input$sampType)
-                  ),
-                  column(width=6,
-                         selectInput(ns("chromPol"), "Chrom & Pol", choices=c("RP","RN","HP","HN"), selected=input$chromPol) #Update this with available chromPol?
-                  )
+            tagList(
+              fluidRow(
+                column(
+                  width=6,
+                  selectInput(ns("sampType"), "Injection type", choices=c("sample","sQC"), selected=input$sampType)
+                ),
+                column(width=6,
+                       selectInput(ns("chromPol"), "Chrom & Pol", choices=c("RP","RN","HP","HN"), selected=input$chromPol) #Update this with available chromPol?
                 )
-              ),
+              )
+            ),
             # },
             fluidRow(
               column(
@@ -293,54 +293,31 @@ monitorServer<-function(id,r){
 
       #Status plot - Actual plot when enough samples
       output$plotStatus<-renderPlotly({
-        # dcastObj<-dcast(r$monitor$plotData$DT, sampleNumber~sampleIter, value.var = 'status')[,-1]
-        # # dcastObj<-t(apply(dcastObj, 1, as.double))
-        # if(ncol(dcastObj)==1){
-        #   dcastObj<-cbind(dcastObj,c(NA,NA,NA))
-        # }
-        # rownames(dcastObj)<-unique(r$monitor$plotData$DT$name)
-        # heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
 
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-
-        if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+        if(nrow(r$monitor$plotData$DT) > 0){
+          nCols <- max(r$monitor$plotData$DT$sampleIter) #max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$configWiz$config$nSampsMonitor){
             toRemove <- r$configWiz$config$nSampsMonitor
-            toShow <- c((nCols-toRemove+3):(nCols+2))
             startNumb <- nCols-(toRemove-1)
           } else {
-            toRemove <- 0
-            toShow <- c(1:nCols)
+            toRemove <- 1
             startNumb <- 1
+            nCols <- 1
           }
 
-          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
-                          sampleNumber~sampleIter,
-                          value.var = 'status')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+                            sampleNumber~sampleIter,
+                            value.var = 'status')[, tail(.SD,-ifelse((toRemove-1)==0, (nCols+2), (toRemove-1))), ]
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          dbDisconnect(conn)
-
-          print(r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)])
-          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
           showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
-          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+          heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
         } else {
-          dbDisconnect(conn)
           NULL
         }
       })
@@ -357,43 +334,30 @@ monitorServer<-function(id,r){
       })
 
       output$plotIntOutlier<-renderPlotly({
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-
-        if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+        if(nrow(r$monitor$plotData$DT) > 0){
+          nCols <- max(r$monitor$plotData$DT$sampleIter) #max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$configWiz$config$nSampsMonitor){
             toRemove <- r$configWiz$config$nSampsMonitor
-            toShow <- c((nCols-toRemove+3):(nCols+2))
             startNumb <- nCols-(toRemove-1)
           } else {
-            toRemove <- 0
-            toShow <- c(1:nCols)
+            toRemove <- 1
             startNumb <- 1
+            nCols <- 1
           }
 
-          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmIntOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+                            sampleNumber~sampleIter,
+                            value.var = 'lmIntOutliers')[, tail(.SD,-ifelse((toRemove-1)==0, (nCols+2), (toRemove-1))), ]
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          dbDisconnect(conn)
-
-          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
-          showNotification("Rendering Int Plot.\n Can take up to 1 minute.")
-          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
+          showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
         } else {
-          dbDisconnect(conn)
           NULL
         }
       })
@@ -410,42 +374,30 @@ monitorServer<-function(id,r){
       })
 
       output$plotRTOutlier<-renderPlotly({
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-
-        if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+        if(nrow(r$monitor$plotData$DT) > 0){
+          nCols <- max(r$monitor$plotData$DT$sampleIter) #max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$configWiz$config$nSampsMonitor){
             toRemove <- r$configWiz$config$nSampsMonitor
-            toShow <- c((nCols-toRemove+3):(nCols+2))
             startNumb <- nCols-(toRemove-1)
           } else {
-            toRemove <- 0
-            toShow <- c(1:nCols)
+            toRemove <- 1
             startNumb <- 1
+            nCols <- 1
           }
 
-          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmRTOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+                            sampleNumber~sampleIter,
+                            value.var = 'lmRTOutliers')[, tail(.SD,-ifelse((toRemove-1)==0, (nCols+2), (toRemove-1))), ]
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
-          dbDisconnect(conn)
 
-          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
-          showNotification("Rendering RT Plot.\n Can take up to 1 minute.")
-          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
+          showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
         } else {
-          dbDisconnect(conn)
           NULL
         }
       })
@@ -462,42 +414,30 @@ monitorServer<-function(id,r){
       })
 
       output$plotHeightOutlier<-renderPlotly({
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-
-        if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+        if(nrow(r$monitor$plotData$DT) > 0){
+          nCols <- max(r$monitor$plotData$DT$sampleIter) #max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$configWiz$config$nSampsMonitor){
             toRemove <- r$configWiz$config$nSampsMonitor
-            toShow <- c((nCols-toRemove+3):(nCols+2))
             startNumb <- nCols-(toRemove-1)
           } else {
-            toRemove <- 0
-            toShow <- c(1:nCols)
+            toRemove <- 1
             startNumb <- 1
+            nCols <- 1
           }
 
-          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmHeightOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+                            sampleNumber~sampleIter,
+                            value.var = 'lmHeightOutliers')[, tail(.SD,-ifelse((toRemove-1)==0, (nCols+2), (toRemove-1))), ]
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
-          dbDisconnect(conn)
 
-          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
-          showNotification("Rendering Height Plot.\n Can take up to 1 minute.")
-          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
+          showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
         } else {
-          dbDisconnect(conn)
           NULL
         }
       })
@@ -514,42 +454,30 @@ monitorServer<-function(id,r){
       })
 
       output$plotFWHMOutlier<-renderPlotly({
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-
-        if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+        if(nrow(r$monitor$plotData$DT) > 0){
+          nCols <- max(r$monitor$plotData$DT$sampleIter) #max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$configWiz$config$nSampsMonitor){
             toRemove <- r$configWiz$config$nSampsMonitor
-            toShow <- c((nCols-toRemove+3):(nCols+2))
             startNumb <- nCols-(toRemove-1)
           } else {
-            toRemove <- 0
-            toShow <- c(1:nCols)
+            toRemove <- 1
             startNumb <- 1
+            nCols <- 1
           }
 
-          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmFWHMOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+                            sampleNumber~sampleIter,
+                            value.var = 'lmFWHMOutliers')[, tail(.SD,-ifelse((toRemove-1)==0, (nCols+2), (toRemove-1))), ]
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
-          dbDisconnect(conn)
 
-          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
-          showNotification("Rendering FWHM Plot.\n Can take up to 1 minute.")
-          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
+          showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
         } else {
-          dbDisconnect(conn)
           NULL
         }
       })
@@ -566,42 +494,30 @@ monitorServer<-function(id,r){
       })
 
       output$plotTFOutlier<-renderPlotly({
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-
-        if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+        if(nrow(r$monitor$plotData$DT) > 0){
+          nCols <- max(r$monitor$plotData$DT$sampleIter) #max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$configWiz$config$nSampsMonitor){
             toRemove <- r$configWiz$config$nSampsMonitor
-            toShow <- c((nCols-toRemove+3):(nCols+2))
             startNumb <- nCols-(toRemove-1)
           } else {
-            toRemove <- 0
-            toShow <- c(1:nCols)
+            toRemove <- 1
             startNumb <- 1
+            nCols <- 1
           }
 
-          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmTFOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+                            sampleNumber~sampleIter,
+                            value.var = 'lmTFOutliers')[, tail(.SD,-ifelse((toRemove-1)==0, (nCols+2), (toRemove-1))), ]
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
-          dbDisconnect(conn)
 
-          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
-          showNotification("Rendering TF Plot.\n Can take up to 1 minute.")
-          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
+          showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
         } else {
-          dbDisconnect(conn)
           NULL
         }
       })
@@ -618,42 +534,30 @@ monitorServer<-function(id,r){
       })
 
       output$plotSNOutlier<-renderPlotly({
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-
-        if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+        if(nrow(r$monitor$plotData$DT) > 0){
+          nCols <- max(r$monitor$plotData$DT$sampleIter) #max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$configWiz$config$nSampsMonitor){
             toRemove <- r$configWiz$config$nSampsMonitor
-            toShow <- c((nCols-toRemove+3):(nCols+2))
             startNumb <- nCols-(toRemove-1)
           } else {
-            toRemove <- 0
-            toShow <- c(1:nCols)
+            toRemove <- 1
             startNumb <- 1
+            nCols <- 1
           }
 
-          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmSNOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+                            sampleNumber~sampleIter,
+                            value.var = 'lmSNOutliers')[, tail(.SD,-ifelse((toRemove-1)==0, (nCols+2), (toRemove-1))), ]
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
-          dbDisconnect(conn)
 
-          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
-          showNotification("Rendering SN Plot.\n Can take up to 1 minute.")
-          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
+          showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
         } else {
-          dbDisconnect(conn)
           NULL
         }
       })
@@ -670,42 +574,30 @@ monitorServer<-function(id,r){
       })
 
       output$plotDataPointsOutlier<-renderPlotly({
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-
-        if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+        if(nrow(r$monitor$plotData$DT) > 0){
+          nCols <- max(r$monitor$plotData$DT$sampleIter) #max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$configWiz$config$nSampsMonitor){
             toRemove <- r$configWiz$config$nSampsMonitor
-            toShow <- c((nCols-toRemove+3):(nCols+2))
             startNumb <- nCols-(toRemove-1)
           } else {
-            toRemove <- 0
-            toShow <- c(1:nCols)
+            toRemove <- 1
             startNumb <- 1
+            nCols <- 1
           }
 
-          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmDPOutliers')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+                            sampleNumber~sampleIter,
+                            value.var = 'lmDPOutliers')[, tail(.SD,-ifelse((toRemove-1)==0, (nCols+2), (toRemove-1))), ]
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
-          dbDisconnect(conn)
 
-          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
-          showNotification("Rendering DataPoints Plot.\n Can take up to 1 minute.")
-          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
+          showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
         } else {
-          dbDisconnect(conn)
           NULL
         }
       })
@@ -722,42 +614,30 @@ monitorServer<-function(id,r){
       })
 
       output$plotNoiseOutlier<-renderPlotly({
-        s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        s2 <- sprintf("SELECT COUNT(*) FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0",
-                      paste0("QTable_",r$configWiz$config$sampleMatrix),
-                      r$monitor$chromPolFormat,
-                      r$monitor$sampType)
-
-        conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-
-        if(as.integer(dbGetQuery(conn, s2)) > 0){
-          nCols <- max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
+        if(nrow(r$monitor$plotData$DT) > 0){
+          nCols <- max(r$monitor$plotData$DT$sampleIter) #max(as.data.table(dbGetQuery(conn,s1))$sampleIter)
 
           if(nCols > r$configWiz$config$nSampsMonitor){
             toRemove <- r$configWiz$config$nSampsMonitor
-            toShow <- c((nCols-toRemove+3):(nCols+2))
             startNumb <- nCols-(toRemove-1)
           } else {
-            toRemove <- 0
-            toShow <- c(1:nCols)
+            toRemove <- 1
             startNumb <- 1
+            nCols <- 1
           }
 
-          dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)), sampleNumber~sampleIter, value.var = 'lmNoise')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
+          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+                            sampleNumber~sampleIter,
+                            value.var = 'lmNoise')[, tail(.SD,-ifelse((toRemove-1)==0, (nCols+2), (toRemove-1))), ]
+
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
-          dbDisconnect(conn)
 
-          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[which(r$monitor$plotData$DTunique$sampleNumber %in% toShow)]
-          showNotification("Rendering Noise Plot.\n Can take up to 1 minute.")
-          heatmaply(dcastObj, dendrogram="none", showticklabels=c(F,F), plotmethod="ggplot")
+          rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
+          showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
+          heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
         } else {
-          dbDisconnect(conn)
           NULL
         }
       })
@@ -777,7 +657,7 @@ monitorServer<-function(id,r){
 
       ####nPeaks plot - Actual plot####
       output$plotnPeaks<-renderPlotly({
-        if(!is.null(r$monitor$plotDataSample)){
+        if(!is.null(r$monitor$plotData$DTunique)){
           p <- plot_ly(type="scatter")
 
           #Setting limits based on chromPol
@@ -804,7 +684,7 @@ monitorServer<-function(id,r){
 
             for(i in 1:length(r$monitor$batchFreq)){
 
-              p<-add_trace(p, x=c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i])), y=r$monitor$plotDataSample$nPeaks[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))], type="scatter", mode="lines+markers", #-1, -1
+              p<-add_trace(p, x=c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i])), y=r$monitor$plotData$DTunique$nPeaks[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))], type="scatter", mode="lines+markers", #-1, -1
                            marker=list(
                              color=graph_colors[i%%5+1]
                            ),
@@ -820,7 +700,7 @@ monitorServer<-function(id,r){
 
             # If first batch, different printing settings
           } else {
-            p <- add_trace(p, x=c(1:r$monitor$plotData$sampsInBatch[1]), y=r$monitor$plotDataSample$nPeaks, type="scatter", mode="lines+markers",
+            p <- add_trace(p, x=c(1:r$monitor$plotData$sampsInBatch[1]), y=r$monitor$plotData$DTunique$nPeaks, type="scatter", mode="lines+markers",
                            marker=list(
                              color=graph_colors[1]
                            ),
@@ -833,11 +713,11 @@ monitorServer<-function(id,r){
           }
           # Adding ablines based on chromPol of samples
           if(upper_abline != 0 && lower_abline != 0){
-            p<-add_trace(p, x=c(min(r$monitor$plotDataSample$sampleNumber), max(r$monitor$plotDataSample$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
+            p<-add_trace(p, x=c(min(r$monitor$plotData$DTunique$sampleNumber), max(r$monitor$plotData$DTunique$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
                          line=list(color ="orange"),
                          name="Soft limit"
             )
-            p<-add_trace(p, x=c(min(r$monitor$plotDataSample$sampleNumber), max(r$monitor$plotDataSample$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
+            p<-add_trace(p, x=c(min(r$monitor$plotData$DTunique$sampleNumber), max(r$monitor$plotData$DTunique$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
                          line=list(color ="red"),
                          name="Hard limit"
             )
@@ -859,7 +739,7 @@ monitorServer<-function(id,r){
 
       ####IPO plot - Actual plot####
       output$plotIPO<-renderPlotly({
-        if(!is.null(r$monitor$plotDataSample)){
+        if(!is.null(r$monitor$r$monitor$plotData$DTunique)){
           p <- plot_ly(type="scatter", mode="lines+markers")
 
           #Setting limits based on chromPol
@@ -885,7 +765,7 @@ monitorServer<-function(id,r){
             sampsSum = 1
 
             for(i in 1:length(r$monitor$batchFreq)){
-              p <- add_trace(p, x=c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i])), y=r$monitor$plotDataSample$IPOscore[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))], type="scatter", mode="lines+markers",
+              p <- add_trace(p, x=c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i])), y=r$monitor$plotData$DTunique$IPOscore[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))], type="scatter", mode="lines+markers",
                              marker=list(
                                color=graph_colors[i%%5+1]
                              ),
@@ -901,7 +781,7 @@ monitorServer<-function(id,r){
 
             # If first batch, different printing settings
           } else {
-            p <- add_trace(p, x=c(1:r$monitor$plotData$sampsInBatch[1]), y=r$monitor$plotDataSample$IPOscore, type="scatter", mode="lines+markers",
+            p <- add_trace(p, x=c(1:r$monitor$plotData$sampsInBatch[1]), y=r$monitor$plotData$DTunique$IPOscore, type="scatter", mode="lines+markers",
                            marker=list(
                              color=graph_colors[1]
                            ),
@@ -915,11 +795,11 @@ monitorServer<-function(id,r){
 
           # Adding ablines based on chromPol of samples
           if(upper_abline != 0 && lower_abline != 0){
-            p <- add_trace(p, x=c(min(r$monitor$plotDataSample$sampleNumber), max(r$monitor$plotDataSample$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
+            p <- add_trace(p, x=c(min(r$monitor$plotData$DTunique$sampleNumber), max(r$monitor$plotData$DTunique$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
                            line=list(color ="orange"),
                            name="Soft limit"
             )
-            p <- add_trace(p, x=c(min(r$monitor$plotDataSample$sampleNumber), max(r$monitor$plotDataSample$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
+            p <- add_trace(p, x=c(min(r$monitor$plotData$DTunique$sampleNumber), max(r$monitor$plotData$DTunique$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
                            line=list(color ="red"),
                            name="Hard limit"
             )
@@ -942,7 +822,7 @@ monitorServer<-function(id,r){
 
       ####nLM plot - Actual plot####
       output$plotnLM<-renderPlotly({
-        if(!is.null(r$monitor$plotDataSample)){
+        if(!is.null(r$monitor$r$monitor$plotData$DTunique)){
           p <- plot_ly(type="scatter", mode="lines+markers")
 
           #Setting limits based on chromPol
@@ -968,7 +848,7 @@ monitorServer<-function(id,r){
             sampsSum = 1
 
             for(i in 1:length(r$monitor$batchFreq)){
-              p <- add_trace(p, x=c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i])), y=r$monitor$plotDataSample$nLMs[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))], type="scatter", mode="lines+markers",
+              p <- add_trace(p, x=c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i])), y=r$monitor$plotData$DTunique$nLMs[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))], type="scatter", mode="lines+markers",
                              marker=list(
                                color=graph_colors[i%%5+1]
                              ),
@@ -984,7 +864,7 @@ monitorServer<-function(id,r){
 
             # If first batch, different printing settings
           } else {
-            p <- add_trace(p, x=c(1:r$monitor$plotData$sampsInBatch[1]), y=r$monitor$plotDataSample$nLMs, type="scatter", mode="lines+markers",
+            p <- add_trace(p, x=c(1:r$monitor$plotData$sampsInBatch[1]), y=r$monitor$plotData$DTunique$nLMs, type="scatter", mode="lines+markers",
                            marker=list(
                              color=graph_colors[1]
                            ),
@@ -998,11 +878,11 @@ monitorServer<-function(id,r){
 
           # Adding ablines based on chromPol of samples
           if(upper_abline != 0 && lower_abline != 0){
-            p <- add_trace(p, x=c(min(r$monitor$plotDataSample$sampleNumber), max(r$monitor$plotDataSample$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
+            p <- add_trace(p, x=c(min(r$monitor$plotData$DTunique$sampleNumber), max(r$monitor$plotData$DTunique$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
                            line=list(color ="orange"),
                            name="Soft limit"
             )
-            p <- add_trace(p, x=c(min(r$monitor$plotDataSample$sampleNumber), max(r$monitor$plotDataSample$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
+            p <- add_trace(p, x=c(min(r$monitor$plotData$DTunique$sampleNumber), max(r$monitor$plotData$DTunique$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
                            line=list(color ="red"),
                            name="Hard limit"
             )
@@ -1052,7 +932,7 @@ monitorServer<-function(id,r){
             for(i in 1:length(r$monitor$batchFreq)){
               p <- add_trace(p,
                              x=c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i])),
-                             y=r$monitor$plotDataSample$TIC[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))],
+                             y=r$monitor$plotData$DTunique$TIC[c(sampsSum:(sampsSum+r$monitor$plotData$sampsInBatch[i]))],
                              type="scatter",
                              mode="lines+markers",
                              marker=list(
@@ -1070,7 +950,7 @@ monitorServer<-function(id,r){
 
             # If first batch, different printing settings
           } else {
-            p <- add_trace(p, x=c(1:r$monitor$plotData$sampsInBatch[1]), y=r$monitor$plotDataSample$TIC, type="scatter", mode="lines+markers",
+            p <- add_trace(p, x=c(1:r$monitor$plotData$sampsInBatch[1]), y=r$monitor$plotData$DTunique$TIC, type="scatter", mode="lines+markers",
                            marker=list(
                              color=graph_colors[1]
                            ),
@@ -1084,11 +964,11 @@ monitorServer<-function(id,r){
 
           # Adding ablines based on chromPol of samples
           if(upper_abline != 0 && lower_abline != 0){
-            p <- add_trace(p, x=c(min(r$monitor$plotDataSample$sampleNumber), max(r$monitor$plotDataSample$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
+            p <- add_trace(p, x=c(min(r$monitor$plotData$DTunique$sampleNumber), max(r$monitor$plotData$DTunique$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
                            line=list(color ="orange"),
                            name="Soft limit"
             )
-            p <- add_trace(p, x=c(min(r$monitor$plotDataSample$sampleNumber), max(r$monitor$plotDataSample$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
+            p <- add_trace(p, x=c(min(r$monitor$plotData$DTunique$sampleNumber), max(r$monitor$plotData$DTunique$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
                            line=list(color ="red"),
                            name="Hard limit"
             )
@@ -1262,49 +1142,54 @@ monitorServer<-function(id,r){
 
       observe({
         invalidateLater(millis=12000, session = session)
-        req(r$configWiz$config$dbName)
+        req(r$monitor$chromPolFormat)
+        req(r$monitor$start)
 
-        if(!is.null(firstPass())){
-          req(input$start)
-        }
+        isolate({
+          req(r$configWiz$config$dbName)
+          # if(!is.null(firstPass())){
+          #
+          # }
 
-        #If DB file exists
-        if(file.exists(r$configWiz$config$dbName)){
-          s1 <- sprintf("SELECT count(*) FROM sqlite_schema WHERE type='view' AND name='%s'",
-                        paste0("QTable_",r$configWiz$config$sampleMatrix))
+          #If DB file exists
+          if(file.exists(r$configWiz$config$dbName)){
+            s1 <- sprintf("SELECT count(*) FROM sqlite_schema WHERE type='view' AND name='%s'",
+                          paste0("QTable_",r$configWiz$config$sampleMatrix))
 
-          conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-          tableExists <- as.integer(dbGetQuery(conn, s1))
+            conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+            tableExists <- as.integer(dbGetQuery(conn, s1))
 
-          #If there is at least one sample of the matrix in the DB
-          if(tableExists > 0){
-            #Collecting project names present
-            s2 <- sprintf("SELECT DISTINCT projName FROM [%s]", # q WHERE q.chromPol='%s'
-                          paste0("QTableDistinct_",r$configWiz$config$sampleMatrix))#, #sampleMatrix
-                          # r$monitor$chromPolFormat,
-                          # r$monitor$sampType) #chromPol
-            isolate({
-              r$monitor$projects <- unlist(dbGetQuery(conn, s2))
-              names(r$monitor$projects) <- NULL
-            })
+            #If there is at least one sample of the matrix in the DB
+            if(tableExists > 0){
+              #Collecting project names present
+              s2 <- sprintf("SELECT DISTINCT projName FROM [%s]", # q WHERE q.chromPol='%s'
+                            paste0("QTableDistinct_",r$configWiz$config$sampleMatrix))#, #sampleMatrix
+              # r$monitor$chromPolFormat,
+              # r$monitor$sampType) #chromPol
+              # isolate({
+              #   r$monitor$projects <- unlist(dbGetQuery(conn, s2))
+              #   names(r$monitor$projects) <- NULL
+              # })
 
-            #Collecting number of samples
-            s3 <- sprintf("SELECT count(*) FROM [%s]",
-                          paste0("QTableDistinct_",r$configWiz$config$sampleMatrix))
-            nSampsTrigger <- as.integer(dbGetQuery(conn, s3))
-            firstPass(1)
+              #Collecting number of samples
+              s3 <- sprintf("SELECT count(*) FROM [%s]",
+                            paste0("QTableDistinct_",
+                                   r$configWiz$config$sampleMatrix))
+              nSampsTrigger <- as.integer(dbGetQuery(conn, s3))
+              firstPass(1)
 
-            #If there is a larger number of samples than previously
-            if(nSampsTrigger > oldNSamps() || !is.null(changedMode())){
-              print("New sample")
-              oldNSamps(nSampsTrigger)
-              dataAvailable(1)
-              changedMode(NULL)
+              #If there is a larger number of samples than previously
+              if(nSampsTrigger > oldNSamps() || !is.null(changedMode())){
+                # print("New sample")
+                oldNSamps(nSampsTrigger)
+                dataAvailable(1)
+                changedMode(NULL)
+              }
             }
-          }
 
-          dbDisconnect(conn)
-        }
+            dbDisconnect(conn)
+          }
+        })
       })
 
       #### Using automatically read report-data into the format used for plotting ####
@@ -1349,7 +1234,8 @@ monitorServer<-function(id,r){
                           r$monitor$sampType)
           }
 
-          test <- Sys.time()
+          # test <- Sys.time()
+          # print(test)
 
           conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
           visDataPermDT<-as.data.table(dbGetQuery(conn, s1))
@@ -1357,7 +1243,7 @@ monitorServer<-function(id,r){
           nSamps <- as.integer(dbGetQuery(conn, s3))
           dbDisconnect(conn)
 
-          print(paste0("#1: ", Sys.time()-test))
+          # print(paste0("#1: ", Sys.time()-test))
 
           #Collecting number of LMs from DB
           if(!is.null(r$monitor$chromPolFormat)){
@@ -1398,7 +1284,7 @@ monitorServer<-function(id,r){
             } else {
               r$monitor$enoughSamples<-2
             }
-            print(paste0("#2: ", Sys.time()-test))
+            # print(paste0("#2: ", Sys.time()-test))
 
             #If enough samples to make plots
             if(r$monitor$enoughSamples>0){
@@ -1425,10 +1311,10 @@ monitorServer<-function(id,r){
               visDataStatus.3 <- NULL
               visDataStatus.4 <- NULL
 
-              print(paste0("#3: ", Sys.time()-test))
+              # print(paste0("#3: ", Sys.time()-test))
 
               r$monitor$plotData=list("DTunique"=sampleLevelDT,
-                                      #"DT"=visDataPermDT,
+                                      "DT"=visDataPermDT,
                                       "sampsInBatch"=sampsInBatch,
                                       "sampleNames" = sampleNames,
                                       "batchSampsIncr"=batchSampsIncr,
@@ -1437,10 +1323,10 @@ monitorServer<-function(id,r){
                                       "visDataStatus.3"=visDataStatus.3,
                                       "visDataStatus.4"=visDataStatus.4)
 
-              print(paste0("#4: ", Sys.time()-test))
+              # print(paste0("#4: ", Sys.time()-test))
 
-              r$monitor$plotDataSample=sampleLevelDT
-              print(paste0("#5: ", Sys.time()-test))
+              # r$monitor$plotDataSample=sampleLevelDT
+              # print(paste0("#5: ", Sys.time()-test))
 
               dataAvailable(NULL)
             }
