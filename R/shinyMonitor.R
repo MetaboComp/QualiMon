@@ -739,7 +739,7 @@ monitorServer<-function(id,r){
 
       ####IPO plot - Actual plot####
       output$plotIPO<-renderPlotly({
-        if(!is.null(r$monitor$r$monitor$plotData$DTunique)){
+        if(!is.null(r$monitor$plotData$DTunique)){
           p <- plot_ly(type="scatter", mode="lines+markers")
 
           #Setting limits based on chromPol
@@ -822,7 +822,7 @@ monitorServer<-function(id,r){
 
       ####nLM plot - Actual plot####
       output$plotnLM<-renderPlotly({
-        if(!is.null(r$monitor$r$monitor$plotData$DTunique)){
+        if(!is.null(r$monitor$plotData$DTunique)){
           p <- plot_ly(type="scatter", mode="lines+markers")
 
           #Setting limits based on chromPol
@@ -904,7 +904,7 @@ monitorServer<-function(id,r){
 
       ####TIC plot - Actual plot####
       output$plotTIC<-renderPlotly({
-        if(!is.null(r$monitor$plotDataSample)){
+        if(!is.null(r$monitor$plotData$DTunique)){
           p <- plot_ly(type="scatter", mode="lines+markers")
 
           #Setting limits based on chromPol

@@ -8,7 +8,8 @@ tutorialUI<-function(id){
     # uiOutput(ns('tutorial_step1')),
     # h4("Step 2. Finding LaMas in XCMS data"),
     # uiOutput(ns("tutorial_step2"))
-    tags$p("The tutorial for how to proceed with setup and usage of the app can be found here:"),
+    tags$p("The tutorial for how to proceed with setup and usage of the app can be found here: "),
+    tags$a(href="https://github.com/MetaboComp/QualiMon/blob/master/QualimonTutorial_v1.pdf", "https://github.com/MetaboComp/QualiMon/blob/master/QualimonTutorial_v1.pdf"),
     tags$p()
   )
 }
