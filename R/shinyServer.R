@@ -46,6 +46,7 @@ server <- function(input, output, session){
   })
 
   session$onSessionEnded(function() {
+    plan(eager)
     stopApp()
   })
 }
