@@ -23,6 +23,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
 
   #Checking if file is already in DB, exiting if yes
   conn <- dbConnect(RSQLite::SQLite(),dbName)
+  sqliteSetBusyHandler(conn, 10000)
   fileInDB <- dbGetQuery(conn, sprintf("SELECT name FROM injections i WHERE name='%s'",
                                        fileName))
   dbDisconnect(conn)

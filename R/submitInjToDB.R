@@ -24,6 +24,7 @@ submitInjToDB<-function(dbName="NameOfDB.db", injToSub){
                          name=character())
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
+  sqliteSetBusyHandler(conn, 10000)
   injIDInd<-as.integer(dbGetQuery(conn,"SELECT COUNT(*) FROM injections")$'COUNT(*)')
 
   #Loop which is putting all information from injToSub in the temp injections df for submission

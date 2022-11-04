@@ -14,6 +14,7 @@ submitSampToDB<-function(dbName="NameOfDB.db", injToSub){
                       name=character())
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
+  sqliteSetBusyHandler(conn, 10000)
   samplesInd<-dbGetQuery(conn,"SELECT COUNT(*) FROM samples")$'COUNT(*)'
 
 

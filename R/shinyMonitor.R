@@ -1159,6 +1159,7 @@ monitorServer<-function(id,r){
             if(file.exists(r$configWiz$config$dbName)){
               #Checking if LaMas available for all chromPols, if not warn user that samples will be disregarded
               conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+              sqliteSetBusyHandler(conn, 10000)
               s1 <- sprintf("SELECT DISTINCT chromPol FROM landmarks")
               r$monitor$availableChromPols <- unlist(dbGetQuery(conn, s1))
               dbDisconnect(conn)
@@ -1288,7 +1289,7 @@ monitorServer<-function(id,r){
       changedMode <- reactiveVal(0)
 
       observe({
-        invalidateLater(millis=12000, session = session)
+        invalidateLater(millis=20000, session = session)
         req(r$monitor$chromPolFormat)
         req(r$monitor$start)
 

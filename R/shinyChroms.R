@@ -130,6 +130,7 @@ chromatogramServer<-function(id,r){
           }
 
           conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+          sqliteSetBusyHandler(conn, 10000)
           r$chroms$sampNames <- dbGetQuery(conn, s1)
           dbDisconnect(conn)
 

@@ -29,6 +29,7 @@ submitLMQualityToDB <- function(testInj, dbName, qualityTable){
                             testInj$type)
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
+  sqliteSetBusyHandler(conn, 10000)
   injIDs <- as.vector(unlist(dbGetQuery(conn, fetchQuery)))
   dbExecute(conn, createViewQuery)
   dbExecute(conn, createViewQuery2)
@@ -58,7 +59,7 @@ submitLMQualityToDB <- function(testInj, dbName, qualityTable){
     qualityTable$sampleNumber <- c(1:3)
   } else {
     if(sampNumb-(testInj$nSampsMonitor-1) <= 0){
-      
+
     } else {
       qualityTable$sampleNumber <- c((sampNumb-(testInj$nSampsMonitor-1)):sampNumb)
     }
