@@ -29,7 +29,7 @@ submitLMQualityToDB <- function(testInj, dbName, qualityTable){
                             testInj$type)
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
-  sqliteSetBusyHandler(conn, 10000)
+  sqliteSetBusyHandler(conn, 40000)
   injIDs <- as.vector(unlist(dbGetQuery(conn, fetchQuery)))
   dbExecute(conn, createViewQuery)
   dbExecute(conn, createViewQuery2)

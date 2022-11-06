@@ -1158,11 +1158,11 @@ monitorServer<-function(id,r){
             #Checking if file exists
             if(file.exists(r$configWiz$config$dbName)){
               #Checking if LaMas available for all chromPols, if not warn user that samples will be disregarded
-              conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-              sqliteSetBusyHandler(conn, 10000)
+              conn1 <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+              sqliteSetBusyHandler(conn1, 40000)
               s1 <- sprintf("SELECT DISTINCT chromPol FROM landmarks")
-              r$monitor$availableChromPols <- unlist(dbGetQuery(conn, s1))
-              dbDisconnect(conn)
+              r$monitor$availableChromPols <- unlist(dbGetQuery(conn1, s1))
+              dbDisconnect(conn1)
 
               if(length(r$monitor$availableChromPols) < 4){
                 missingChromPols <- c("RP", "RN", "HP", "HN")
@@ -1304,9 +1304,9 @@ monitorServer<-function(id,r){
             s1 <- sprintf("SELECT count(*) FROM sqlite_schema WHERE type='view' AND name='%s'",
                           paste0("QTable_",r$configWiz$config$sampleMatrix))
 
-            conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-            sqliteSetBusyHandler(conn, 10000)
-            tableExists <- as.integer(dbGetQuery(conn, s1))
+            conn2 <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+            sqliteSetBusyHandler(conn2, 40000)
+            tableExists <- as.integer(dbGetQuery(conn2, s1))
 
             #If there is at least one sample of the matrix in the DB
             if(tableExists > 0){
@@ -1324,7 +1324,7 @@ monitorServer<-function(id,r){
               s3 <- sprintf("SELECT count(*) FROM [%s]",
                             paste0("QTableDistinct_",
                                    r$configWiz$config$sampleMatrix))
-              nSampsTrigger <- as.integer(dbGetQuery(conn, s3))
+              nSampsTrigger <- as.integer(dbGetQuery(conn2, s3))
               firstPass(1)
 
               #If there is a larger number of samples than previously
@@ -1335,7 +1335,7 @@ monitorServer<-function(id,r){
               }
             }
 
-            dbDisconnect(conn)
+            dbDisconnect(conn2)
           }
         })
       })
@@ -1385,12 +1385,12 @@ monitorServer<-function(id,r){
           # test <- Sys.time()
           # print(test)
 
-          conn <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-          sqliteSetBusyHandler(conn, 10000)
-          visDataPermDT<-as.data.table(dbGetQuery(conn, s1))
-          sampleLevelDT<-as.data.table(dbGetQuery(conn, s2))
-          nSamps <- as.integer(dbGetQuery(conn, s3))
-          dbDisconnect(conn)
+          conn3 <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+          sqliteSetBusyHandler(conn3, 40000)
+          visDataPermDT<-as.data.table(dbGetQuery(conn3, s1))
+          sampleLevelDT<-as.data.table(dbGetQuery(conn3, s2))
+          nSamps <- as.integer(dbGetQuery(conn3, s3))
+          dbDisconnect(conn3)
 
           # print(paste0("#1: ", Sys.time()-test))
 

@@ -22,7 +22,7 @@ submitLMPeaksToDB<-function(dbName="Test.db", injToSub){
                       dataPoints=integer())
 
   conn <- dbConnect(RSQLite::SQLite(),dbName)
-  sqliteSetBusyHandler(conn, 10000)
+  sqliteSetBusyHandler(conn, 40000)
   lmPeaksInd<-as.integer(dbGetQuery(conn,"SELECT COUNT(*) FROM lmPeaks")$'COUNT(*)')
 
   n<-1

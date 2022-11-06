@@ -88,11 +88,11 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
       }
 
       #Test if projectName already in DB, otherwise add it
-      conn <- dbConnect(RSQLite::SQLite(),DB)
-      sqliteSetBusyHandler(conn, 10000)
-      projectName<-dbGetQuery(conn, sprintf("SELECT projectID FROM projects WHERE projName='%s'",
+      conn1 <- dbConnect(RSQLite::SQLite(),DB)
+      sqliteSetBusyHandler(conn1, 40000)
+      projectName<-dbGetQuery(conn1, sprintf("SELECT projectID FROM projects WHERE projName='%s'",
                                             projectID))
-      dbDisconnect(conn)
+      dbDisconnect(conn1)
       if(dim(projectName)[1]==0){
         addProject(DB, projectID)
       }
