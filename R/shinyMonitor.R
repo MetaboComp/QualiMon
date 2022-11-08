@@ -316,8 +316,7 @@ monitorServer<-function(id,r){
           }
 
 
-
-          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+          dcastObj <- dcast(r$monitor$plotData$DT,
                             sampleNumber~sampleIter,
                             value.var = 'status')[, tail(.SD, rowsToRemove), ]
 
@@ -325,7 +324,6 @@ monitorServer<-function(id,r){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
 
-          # print(length(r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]))
           rownames(dcastObj)<-r$monitor$plotData$DTunique$name[dcastObj$sampleNumber]
           showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
           heatmaply(dcastObj[,sampleNumber:=NULL], dendrogram="none", showticklabels = c(F,F), plotmethod="ggplot")
@@ -366,7 +364,7 @@ monitorServer<-function(id,r){
             rowsToRemove = -(toRemove-1)
           }
 
-          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+          dcastObj <- dcast(r$monitor$plotData$DT,
                             sampleNumber~sampleIter,
                             value.var = 'lmIntOutliers')[, tail(.SD, rowsToRemove), ]
 
@@ -414,7 +412,7 @@ monitorServer<-function(id,r){
             rowsToRemove = -(toRemove-1)
           }
 
-          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+          dcastObj <- dcast(r$monitor$plotData$DT,
                             sampleNumber~sampleIter,
                             value.var = 'lmRTOutliers')[, tail(.SD, rowsToRemove), ]
 
@@ -462,7 +460,7 @@ monitorServer<-function(id,r){
             rowsToRemove = -(toRemove-1)
           }
 
-          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+          dcastObj <- dcast(r$monitor$plotData$DT,
                             sampleNumber~sampleIter,
                             value.var = 'lmHeightOutliers')[, tail(.SD, rowsToRemove), ]
 
@@ -510,7 +508,7 @@ monitorServer<-function(id,r){
             rowsToRemove = -(toRemove-1)
           }
 
-          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+          dcastObj <- dcast(r$monitor$plotData$DT,
                             sampleNumber~sampleIter,
                             value.var = 'lmFWHMOutliers')[, tail(.SD, rowsToRemove), ]
 
@@ -558,7 +556,7 @@ monitorServer<-function(id,r){
             rowsToRemove = -(toRemove-1)
           }
 
-          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+          dcastObj <- dcast(r$monitor$plotData$DT,
                             sampleNumber~sampleIter,
                             value.var = 'lmTFOutliers')[, tail(.SD, rowsToRemove), ]
 
@@ -606,7 +604,7 @@ monitorServer<-function(id,r){
             rowsToRemove = -(toRemove-1)
           }
 
-          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+          dcastObj <- dcast(r$monitor$plotData$DT,
                             sampleNumber~sampleIter,
                             value.var = 'lmSNOutliers')[, tail(.SD, rowsToRemove), ]
 
@@ -654,7 +652,7 @@ monitorServer<-function(id,r){
             rowsToRemove = -(toRemove-1)
           }
 
-          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+          dcastObj <- dcast(r$monitor$plotData$DT,
                             sampleNumber~sampleIter,
                             value.var = 'lmDPOutliers')[, tail(.SD, rowsToRemove), ]
 
@@ -702,7 +700,7 @@ monitorServer<-function(id,r){
             rowsToRemove = -(toRemove-1)
           }
 
-          dcastObj <- dcast(r$monitor$plotData$DT[which(r$monitor$plotData$DT$sampleIter > nCols-toRemove)], #as.data.table(dbGetQuery(conn,s1))
+          dcastObj <- dcast(r$monitor$plotData$DT,
                             sampleNumber~sampleIter,
                             value.var = 'lmNoise')[, tail(.SD, rowsToRemove), ]
 
@@ -1200,6 +1198,7 @@ monitorServer<-function(id,r){
           input$start
         },
         handlerExpr = {
+          time <- Sys.time()
 
           if(input$start==F){
             r$monitor$start<-F
@@ -1231,9 +1230,10 @@ monitorServer<-function(id,r){
                 })
             }
           }
+          NULL
 
           #Looks weird but only way to snap out of waiting for future
-          if(r$monitor$start==TRUE){}
+          # if(r$monitor$start==TRUE){}
 
           #Making sure user input is carried through rerendering of box
           updateSelectInput(
@@ -1292,12 +1292,10 @@ monitorServer<-function(id,r){
         invalidateLater(millis=20000, session = session)
         req(r$monitor$chromPolFormat)
         req(r$monitor$start)
+        r$monitor$start
 
         isolate({
           req(r$configWiz$config$dbName)
-          # if(!is.null(firstPass())){
-          #
-          # }
 
           #If DB file exists
           if(file.exists(r$configWiz$config$dbName)){
@@ -1346,12 +1344,37 @@ monitorServer<-function(id,r){
 
         if(file.exists(r$configWiz$config$dbName) && r$monitor$projName!=""){
 
-          #Reading LaMa related data
           if(r$monitor$projName != "All samples"){
-            s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.projName='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0", #Changed
+            s3 <- sprintf("SELECT MAX(sampleIter) FROM [%s] q WHERE q.chromPol='%s' AND q.projName='%s' AND q.type='%s'",
                           paste0("QTable_",r$configWiz$config$sampleMatrix),
                           r$monitor$chromPolFormat,
                           r$monitor$projName,
+                          r$monitor$sampType)
+          } else {
+            s3 <- sprintf("SELECT MAX(sampleIter) FROM [%s] q WHERE q.chromPol='%s' AND q.type='%s'",
+                          paste0("QTable_",r$configWiz$config$sampleMatrix),
+                          r$monitor$chromPolFormat,
+                          r$monitor$sampType)
+          }
+          conn3 <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+
+          #Checking moving window size and number of samples
+          nCols <- as.integer(dbGetQuery(conn3, s3))
+
+          if(nCols > r$configWiz$config$nSampsMonitor){
+            startNumb <- nCols-r$configWiz$config$nSampsMonitor
+          } else {
+            startNumb <- 0
+          }
+
+
+          #Reading LaMa related data
+          if(r$monitor$projName != "All samples"){
+            s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.projName='%s' AND q.sampleIter>%s AND q.type='%s' AND q.status >= 0", #Changed
+                          paste0("QTable_",r$configWiz$config$sampleMatrix),
+                          r$monitor$chromPolFormat,
+                          r$monitor$projName,
+                          startNumb,
                           r$monitor$sampType)
 
             s2 <- sprintf("SELECT i.name, i.nLMs, i.nPeaks, i.TIC, i.IPOscore, i.batchWeek, i.sampleNumber FROM [%s] i WHERE i.chromPol='%s' AND i.projName='%s' AND i.type='%s'",
@@ -1366,9 +1389,10 @@ monitorServer<-function(id,r){
                           r$monitor$projName,
                           r$monitor$sampType)
           } else {
-            s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>0 AND q.type='%s' AND q.status >= 0", #Changed
+            s1 <- sprintf("SELECT * FROM [%s] q WHERE q.chromPol='%s' AND q.sampleIter>%s AND q.type='%s' AND q.status >= 0", #Changed
                           paste0("QTable_",r$configWiz$config$sampleMatrix),
                           r$monitor$chromPolFormat,
+                          startNumb,
                           r$monitor$sampType)
 
             s2 <- sprintf("SELECT i.name, i.nLMs, i.nPeaks, i.TIC, i.IPOscore, i.batchWeek, i.sampleNumber FROM [%s] i WHERE i.chromPol='%s' AND i.type='%s'",
@@ -1382,17 +1406,11 @@ monitorServer<-function(id,r){
                           r$monitor$sampType)
           }
 
-          # test <- Sys.time()
-          # print(test)
-
-          conn3 <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
           sqliteSetBusyHandler(conn3, 40000)
           visDataPermDT<-as.data.table(dbGetQuery(conn3, s1))
           sampleLevelDT<-as.data.table(dbGetQuery(conn3, s2))
-          nSamps <- as.integer(dbGetQuery(conn3, s3))
+          nSamps<-as.data.table(dbGetQuery(conn3, s3))
           dbDisconnect(conn3)
-
-          # print(paste0("#1: ", Sys.time()-test))
 
           #Collecting number of LMs from DB
           if(!is.null(r$monitor$chromPolFormat)){
@@ -1433,7 +1451,6 @@ monitorServer<-function(id,r){
             } else {
               r$monitor$enoughSamples<-2
             }
-            # print(paste0("#2: ", Sys.time()-test))
 
             #If enough samples to make plots
             if(r$monitor$enoughSamples>0){
@@ -1460,8 +1477,6 @@ monitorServer<-function(id,r){
               visDataStatus.3 <- NULL
               visDataStatus.4 <- NULL
 
-              # print(paste0("#3: ", Sys.time()-test))
-
               r$monitor$plotData=list("DTunique"=sampleLevelDT,
                                       "DT"=visDataPermDT,
                                       "sampsInBatch"=sampsInBatch,
@@ -1471,12 +1486,6 @@ monitorServer<-function(id,r){
                                       "visDataStatus.2"=visDataStatus.2,
                                       "visDataStatus.3"=visDataStatus.3,
                                       "visDataStatus.4"=visDataStatus.4)
-
-              # print(paste0("#4: ", Sys.time()-test))
-
-              # r$monitor$plotDataSample=sampleLevelDT
-              # print(paste0("#5: ", Sys.time()-test))
-
               dataAvailable(NULL)
             }
           }
