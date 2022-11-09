@@ -1292,7 +1292,6 @@ monitorServer<-function(id,r){
         invalidateLater(millis=20000, session = session)
         req(r$monitor$chromPolFormat)
         req(r$monitor$start)
-        r$monitor$start
 
         isolate({
           req(r$configWiz$config$dbName)
