@@ -1230,10 +1230,9 @@ monitorServer<-function(id,r){
                 })
             }
           }
-          NULL
 
           #Looks weird but only way to snap out of waiting for future
-          # if(r$monitor$start==TRUE){}
+          if(r$monitor$start==TRUE){}
 
           #Making sure user input is carried through rerendering of box
           updateSelectInput(
@@ -1292,6 +1291,7 @@ monitorServer<-function(id,r){
         invalidateLater(millis=20000, session = session)
         req(r$monitor$chromPolFormat)
         req(r$monitor$start)
+        r$monitor$start
 
         isolate({
           req(r$configWiz$config$dbName)

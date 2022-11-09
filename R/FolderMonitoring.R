@@ -144,7 +144,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
       if(!file.exists(mzMLdir)){
         suppressWarnings(dir.create(paste0(mzMLdir), recursive = T))
       }
-      cmd <- paste("cd", paste0("\"",ConvDir,"\""),"&&" ,paste0("\"",msconvert,"\"") , "--64 --zlib --mzML -o",paste0("\"",mzMLdir,"\""), FileBaseName)
+      cmd <- paste("cd /d", paste0("\"",ConvDir,"\""),"&&" ,paste0("\"",msconvert,"\"") , "--64 --zlib --mzML -o",paste0("\"",mzMLdir,"\""), FileBaseName)
       shell(cmd)
 
       #Collect filepath and filename of files, file.info(...)$ctime used to find the most recent file
