@@ -1224,7 +1224,7 @@ monitorServer<-function(id,r){
                 (function(result){
                 }) %...!%
                 (function(error){
-                  stopMulticoreFuture(fut)
+                  # stopMulticoreFuture(fut)
                   r$monitor$start<-F
                   warning(error)
                 })
