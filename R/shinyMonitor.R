@@ -1288,10 +1288,12 @@ monitorServer<-function(id,r){
       changedMode <- reactiveVal(0)
 
       observe({
-        invalidateLater(millis=20000, session = session)
+        invalidateLater(millis=40000, session = session)
         req(r$monitor$chromPolFormat)
         req(r$monitor$start)
         r$monitor$start
+        r$monitor$chromPolFormat
+        r$monitor$sampType
 
         isolate({
           req(r$configWiz$config$dbName)
