@@ -789,7 +789,7 @@ findLamasServer<-function(id,r){
               modalDialog(
                 title="Wrong format of .rds!",
                 tags$b("The format of the data in .rds-file is wrong\n"),
-                tags$b("Try loading a .rds-file containing a peak table.")
+                tags$b("Try loading a .rds-file containing a peak table."),
                 easyClose=FALSE
               )
             )
