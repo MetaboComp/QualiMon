@@ -84,7 +84,7 @@ findLamasUI<-function(id){
           column(
             width=6,
             div(style="text-align:right;", #!important;
-              uiOutput(ns('runButton'))
+                uiOutput(ns('runButton'))
             )
           )
         )
@@ -193,14 +193,14 @@ findLamasServer<-function(id,r){
 
         tagList(
           div(style="text-align:left;",
-            tags$br(),
-            tags$b(r$findLamas$dbSubmitLamasTo)
+              tags$br(),
+              tags$b(r$findLamas$dbSubmitLamasTo)
           ),
 
           div(style="text-align:right;",
-            if(is.null(r$findLamas$submitLamas) && !is.null(r$findLamas$outObj)){
-              actionButton(inputId=ns('submitLamas'), label="Submit LaMas to db")
-            }
+              if(is.null(r$findLamas$submitLamas) && !is.null(r$findLamas$outObj)){
+                actionButton(inputId=ns('submitLamas'), label="Submit LaMas to db")
+              }
           )
         )
       })
@@ -248,20 +248,20 @@ findLamasServer<-function(id,r){
                        plotlyOutput(ns('lamaSet2'))
                      ),
                      if(!is.null(r$findLamas$outObj)){
-                     column(
-                       width=4,
-                       tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[2]][1],0))),
-                       tags$br(),
-                       tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[2]][2],2))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[2]][3],1))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[2]][4],0))),
-                       tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[2]]))),
-                       tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[2]][5],3))
-                     )
+                       column(
+                         width=4,
+                         tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[2]][1],0))),
+                         tags$br(),
+                         tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[2]][2],2))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[2]][3],1))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[2]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[2]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[2]][5],3))
+                       )
                      }
                    )
           ),
@@ -272,20 +272,20 @@ findLamasServer<-function(id,r){
                        plotlyOutput(ns('lamaSet3'))
                      ),
                      if(!is.null(r$findLamas$outObj)){
-                     column(
-                       width=4,
-                       tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[3]][1],0))),
-                       tags$br(),
-                       tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[3]][2],2))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[3]][3],1))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[3]][4],0))),
-                       tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[3]]))),
-                       tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[3]][5],3))
-                     )
+                       column(
+                         width=4,
+                         tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[3]][1],0))),
+                         tags$br(),
+                         tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[3]][2],2))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[3]][3],1))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[3]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[3]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[3]][5],3))
+                       )
                      }
                    )
           ),
@@ -296,20 +296,20 @@ findLamasServer<-function(id,r){
                        plotlyOutput(ns('lamaSet4'))
                      ),
                      if(!is.null(r$findLamas$outObj)){
-                     column(
-                       width=4,
-                       tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[4]][1],0))),
-                       tags$br(),
-                       tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[4]][2],2))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[4]][3],1))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[4]][4],0))),
-                       tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[4]]))),
-                       tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[4]][5],3))
-                     )
+                       column(
+                         width=4,
+                         tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[4]][1],0))),
+                         tags$br(),
+                         tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[4]][2],2))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[4]][3],1))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[4]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[4]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[4]][5],3))
+                       )
                      }
                    )
           ),
@@ -320,20 +320,20 @@ findLamasServer<-function(id,r){
                        plotlyOutput(ns('lamaSet5'))
                      ),
                      if(!is.null(r$findLamas$outObj)){
-                     column(
-                       width=4,
-                       tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[5]][1],0))),
-                       tags$br(),
-                       tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[5]][2],2))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[5]][3],1))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[5]][4],0))),
-                       tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[5]]))),
-                       tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[5]][5],3))
-                     )
+                       column(
+                         width=4,
+                         tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[5]][1],0))),
+                         tags$br(),
+                         tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[5]][2],2))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[5]][3],1))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[5]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[5]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[5]][5],3))
+                       )
                      }
                    )
           ),
@@ -344,20 +344,20 @@ findLamasServer<-function(id,r){
                        plotlyOutput(ns('lamaSet6'))
                      ),
                      if(!is.null(r$findLamas$outObj)){
-                     column(
-                       width=4,
-                       tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[6]][1],0))),
-                       tags$br(),
-                       tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[6]][2],2))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[6]][3],1))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[6]][4],0))),
-                       tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[6]]))),
-                       tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[6]][5],3))
-                     )
+                       column(
+                         width=4,
+                         tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[6]][1],0))),
+                         tags$br(),
+                         tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[6]][2],2))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[6]][3],1))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[6]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[6]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[6]][5],3))
+                       )
                      }
                    )
           ),
@@ -368,20 +368,20 @@ findLamasServer<-function(id,r){
                        plotlyOutput(ns('lamaSet7'))
                      ),
                      if(!is.null(r$findLamas$outObj)){
-                     column(
-                       width=4,
-                       tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[7]][1],0))),
-                       tags$br(),
-                       tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[7]][2],2))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[7]][3],1))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[7]][4],0))),
-                       tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[7]]))),
-                       tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[7]][5],3))
-                     )
+                       column(
+                         width=4,
+                         tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[7]][1],0))),
+                         tags$br(),
+                         tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[7]][2],2))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[7]][3],1))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[7]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[7]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[7]][5],3))
+                       )
                      }
                    )
           ),
@@ -392,20 +392,20 @@ findLamasServer<-function(id,r){
                        plotlyOutput(ns('lamaSet8'))
                      ),
                      if(!is.null(r$findLamas$outObj)){
-                     column(
-                       width=4,
-                       tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[8]][1],0))),
-                       tags$br(),
-                       tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[8]][2],2))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[8]][3],1))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[8]][4],0))),
-                       tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[8]]))),
-                       tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[8]][5],3))
-                     )
+                       column(
+                         width=4,
+                         tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[8]][1],0))),
+                         tags$br(),
+                         tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[8]][2],2))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[8]][3],1))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[8]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[8]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[8]][5],3))
+                       )
                      }
                    )
           ),
@@ -416,20 +416,20 @@ findLamasServer<-function(id,r){
                        plotlyOutput(ns('lamaSet9'))
                      ),
                      if(!is.null(r$findLamas$outObj)){
-                     column(
-                       width=4,
-                       tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[9]][1],0))),
-                       tags$br(),
-                       tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[9]][2],2))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[9]][3],1))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[9]][4],0))),
-                       tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[9]]))),
-                       tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[9]][5],3))
-                     )
+                       column(
+                         width=4,
+                         tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[9]][1],0))),
+                         tags$br(),
+                         tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[9]][2],2))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[9]][3],1))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[9]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[9]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[9]][5],3))
+                       )
                      }
                    )
           ),
@@ -440,20 +440,20 @@ findLamasServer<-function(id,r){
                        plotlyOutput(ns('lamaSet10'))
                      ),
                      if(!is.null(r$findLamas$outObj)){
-                     column(
-                       width=4,
-                       tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[10]][1],0))),
-                       tags$br(),
-                       tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[10]][2],2))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[10]][3],1))),
-                       tags$br(),
-                       tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[10]][4],0))),
-                       tags$br(),
-                       tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[10]]))),
-                       tags$br(),
-                       tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[10]][5],3))
-                     )
+                       column(
+                         width=4,
+                         tags$b(paste0("Min. intensity: ", round(r$findLamas$outObj[[2]][[10]][1],0))),
+                         tags$br(),
+                         tags$b(paste0("Allowed missingness: ", round(r$findLamas$outObj[[2]][[10]][2],2))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in mz: ", round(r$findLamas$outObj[[2]][[10]][3],1))),
+                         tags$br(),
+                         tags$b(paste0("Diff. in rt: ", round(r$findLamas$outObj[[2]][[10]][4],0))),
+                         tags$br(),
+                         tags$b(paste0("Number of LaMas: ", nrow(r$findLamas$outObj[[1]][[10]]))),
+                         tags$br(),
+                         tags$b(paste0("RT coverage of LaMas: "), round(r$findLamas$outObj[[2]][[10]][5],3))
+                       )
                      }
                    )
           )
@@ -601,7 +601,7 @@ findLamasServer<-function(id,r){
 
       #Choosing a set and submitting it to a .db-file
       observe({
-          r$findLamas$lamaSetToSubmit <- as.double(input$lamaSetToSubmit)
+        r$findLamas$lamaSetToSubmit <- as.double(input$lamaSetToSubmit)
       })
 
       #Choose .db file to upload to
@@ -651,8 +651,6 @@ findLamasServer<-function(id,r){
           landmarks[,3] <- r$findLamas$outObj[[1]][[as.double(r$findLamas$lamaSetToSubmit)]][,2]
           landmarks[,4] <- rep(r$findLamas$outObj[[3]],nrow(r$findLamas$outObj[[1]][[as.double(r$findLamas$lamaSetToSubmit)]]))
           landmarks[,5] <- paste0(landmarks[,2],"_",landmarks[,3])
-
-          print(landmarks)
 
           submitLMToDB(r$findLamas$dbSubmitLamasTo, landmarks)
 
@@ -709,7 +707,13 @@ findLamasServer<-function(id,r){
 
           if(!is.null(input$preFCPFilepath) && length(grep(".rds",as.character(input$preFCPFilepath)))>0){
 
-            fileSelMonitor<-parseFilePaths(r$configWiz$roots,input$preFCPFilepath)
+            if(input$preFCPFilepath$root == "wd"){
+              fileSelMonitor <- list()
+              fileSelMonitor$datapath <- paste0(getwd(),"/",input$preFCPFilepath$files$`0`[[2]])
+            } else {
+              fileSelMonitor<-parseFilePaths(r$configWiz$roots,input$preFCPFilepath)
+            }
+
             r$findLamas$preFCPfilepath<-as.character(fileSelMonitor$datapath)
 
           }
@@ -780,19 +784,30 @@ findLamasServer<-function(id,r){
         handlerExpr={
           r$findLamas$startOptimize <- 1
 
-          showNotification("Optimization initiated")
-          withProgress(
-            value=0,
-            message="Optimizing LaMas",
-            r$findLamas$outObj <- optimizeFindLM(r$findLamas$preFCPfilepath,
-                                                 r$findLamas$split,
-                                                 r$findLamas$minRTcheck,
-                                                 r$findLamas$preFilterIntensity,
-                                                 r$findLamas$chromPol,
-                                                 r$findLamas$minMaxLamas[1],
-                                                 r$findLamas$minMaxLamas[2])
-          )
-          showNotification("Optimization of LaMas completed.")
+          if(any(!(grepl(r$findLamas$split, colnames(readRDS(fileSelMonitor)))))){
+            showModal(
+              modalDialog(
+                title="Wrong format of .rds!",
+                tags$b("The format of the data in .rds-file is wrong\n"),
+                tags$b("Try loading a .rds-file containing a peak table.")
+                easyClose=FALSE
+              )
+            )
+          } else {
+            showNotification("Optimization initiated")
+            withProgress(
+              value=0,
+              message="Optimizing LaMas",
+              r$findLamas$outObj <- optimizeFindLM(r$findLamas$preFCPfilepath,
+                                                   r$findLamas$split,
+                                                   r$findLamas$minRTcheck,
+                                                   r$findLamas$preFilterIntensity,
+                                                   r$findLamas$chromPol,
+                                                   r$findLamas$minMaxLamas[1],
+                                                   r$findLamas$minMaxLamas[2])
+            )
+            showNotification("Optimization of LaMas completed.")
+          }
         }
       )
 

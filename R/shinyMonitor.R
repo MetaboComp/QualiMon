@@ -1300,41 +1300,42 @@ monitorServer<-function(id,r){
 
           #If DB file exists
           if(file.exists(r$configWiz$config$dbName)){
-            s1 <- sprintf("SELECT count(*) FROM sqlite_schema WHERE type='view' AND name='%s'",
-                          paste0("QTable_",r$configWiz$config$sampleMatrix))
-
-            conn2 <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
-            sqliteSetBusyHandler(conn2, 40000)
-            tableExists <- as.integer(dbGetQuery(conn2, s1))
-
-            #If there is at least one sample of the matrix in the DB
-            if(tableExists > 0){
-              #Collecting project names present
-              s2 <- sprintf("SELECT DISTINCT projName FROM [%s]", # q WHERE q.chromPol='%s'
-                            paste0("QTableDistinct_",r$configWiz$config$sampleMatrix))#, #sampleMatrix
-              # r$monitor$chromPolFormat,
-              # r$monitor$sampType) #chromPol
-              # isolate({
-              #   r$monitor$projects <- unlist(dbGetQuery(conn, s2))
-              #   names(r$monitor$projects) <- NULL
-              # })
-
-              #Collecting number of samples
-              s3 <- sprintf("SELECT count(*) FROM [%s]",
-                            paste0("QTableDistinct_",
-                                   r$configWiz$config$sampleMatrix))
-              nSampsTrigger <- as.integer(dbGetQuery(conn2, s3))
-              firstPass(1)
-
-              #If there is a larger number of samples than previously
+            # s1 <- sprintf("SELECT count(*) FROM sqlite_schema WHERE type='view' AND name='%s'",
+            #               paste0("QTable_",r$configWiz$config$sampleMatrix))
+            #
+            # conn2 <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
+            # sqliteSetBusyHandler(conn2, 40000)
+            # tableExists <- as.integer(dbGetQuery(conn2, s1))
+#
+#             #If there is at least one sample of the matrix in the DB
+#             if(tableExists > 0){
+#               #Collecting project names present
+#               s2 <- sprintf("SELECT DISTINCT projName FROM [%s]", # q WHERE q.chromPol='%s'
+#                             paste0("QTableDistinct_",r$configWiz$config$sampleMatrix))#, #sampleMatrix
+#               # r$monitor$chromPolFormat,
+#               # r$monitor$sampType) #chromPol
+#               # isolate({
+#               #   r$monitor$projects <- unlist(dbGetQuery(conn, s2))
+#               #   names(r$monitor$projects) <- NULL
+#               # })
+#
+#               #Collecting number of samples
+#               s3 <- sprintf("SELECT count(*) FROM [%s]",
+#                             paste0("QTableDistinct_",
+#                                    r$configWiz$config$sampleMatrix))
+#               nSampsTrigger <- as.integer(dbGetQuery(conn2, s3))
+                nSampsTrigger <- file.info(r$configWiz$config$dbName)$size
+#               firstPass(1)
+#
+#               #If there is a larger number of samples than previously
               if(nSampsTrigger > oldNSamps() || !is.null(changedMode())){
                 oldNSamps(nSampsTrigger)
                 dataAvailable(1)
                 changedMode(NULL)
               }
-            }
-
-            dbDisconnect(conn2)
+#             }
+#
+#             dbDisconnect(conn2)
           }
         })
       })
