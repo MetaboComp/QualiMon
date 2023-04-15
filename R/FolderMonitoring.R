@@ -97,6 +97,9 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
         addProject(DB, projectID)
       }
 
+      print(projectName)
+      print(projectID)
+
 
       #Sub-loop checking the youngest file which has been identified as new is still growing in size until it's not growing anymore. minFileSize makes sure that the script doesn't copy empty files which causes error
       Sys.sleep(sleep.time)
@@ -163,9 +166,11 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
         #Checking if chromPol of sample is available in DB
         currChromPol <- paste0(strsplit(Sample$filenames, split='_')[[1]][3], "_", strsplit(Sample$filenames, split='_')[[1]][4])
         convChromPol <- switch(currChromPol, "RP_POS"="RP", "RP_NEG"="RN", "HILIC_POS"="HP", "HILIC_NEG"="HN")
+        print("First if after copy + mzML conversion")
 
         if(convChromPol %in% availableChromPols){
           Sample$sample <- strsplit(Sample$filenames, split='_')[[1]][5]
+          print("Just prior to checkLM")
 
           ####CheckLM####
           checkLM(filePath=paste0(mzMLdir, "/", Sample$filenames), dbName=DB, instrument = instrument, projName=projectID, sampleMatrix=sampleMatrix, Config=Config, dPPM = dPPM, rtWin=rtWin, noCheck = noCheck, alpha = alpha, slackOn = T)
