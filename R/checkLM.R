@@ -133,11 +133,11 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   }
   # Default centwave-parameters for xcms
   if(is.null(cwp)) {
-    cwp <- CentWaveParam(peakwidth = c(8, 50),# Peak picking parameters for XCMS using centwave
-                         noise = 1000,
-                         ppm = 20,
-                         mzdiff = 0.003,
-                         prefilter = c(3,1000),
+    cwp <- CentWaveParam(peakwidth = c(4, 40),# Peak picking parameters for XCMS using centwave
+                         noise = 300,
+                         ppm = 15,
+                         mzdiff = -0.0065,
+                         prefilter = c(3,1500),
                          integrate = 1,
                          snthresh = 10)
   }
@@ -203,6 +203,8 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       position_in_LMDF <- c(position_in_LMDF, j)
     }
   }
+
+  #### If no LaMas found whatsoever, enter NA into all things? ####
 
   #################################
   #### CPC processing of peaks ####
