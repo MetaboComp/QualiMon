@@ -16,7 +16,7 @@
 #' @return Nothing
 
 #The specific instrument could be logged if inputed by user!
-checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName="", sampleMatrix="", dPPM=10, rtWin=30, alpha = 0.01, noCheck=c("blank", "cond", "CP"), cwp=NULL, Config=Config, slackOn=F, batch=F){
+checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName="", sampleMatrix="", dPPM=10, rtWin=30, alpha = 0.01, noCheck=c("blank", "cond", "CP"), Config=Config, slackOn=F, batch=F){
 
   #Extracting the file name from the filePath
   fileName<-basename(filePath)
@@ -131,8 +131,9 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
     print('Sample does not have any supported polarity, please make sure naming of file is correct')
     return()
   }
+
   # Default centwave-parameters for xcms
-  if(is.null(cwp)) {
+  if(is.null(Config$cwp_peakwidthL)) {
     cwp <- CentWaveParam(peakwidth = c(4, 40),# Peak picking parameters for XCMS using centwave
                          noise = 300,
                          ppm = 15,
@@ -140,6 +141,14 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
                          prefilter = c(3,1500),
                          integrate = 1,
                          snthresh = 10)
+  } else {
+    cwp <- CentWaveParam(peakwidth = c(Config$cwp_peakwidthL, Config$cwp_peakwidthR),# Peak picking parameters for XCMS using centwave
+                         noise = Config$cwp_noise,
+                         ppm = Config$cwp_ppm,
+                         mzdiff = Config$mzdiff,
+                         prefilter = c(Config$prefilterL, Config$prefilterR),
+                         integrate = Config$cwp_integrate,
+                         snthresh = Config$cwp_snthresh)
   }
 
 

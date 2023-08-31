@@ -154,8 +154,19 @@ readConfigFile <- function(configFilePath){
   statusTIC<-as.integer(txtobj[260])
   statusnLM<-as.integer(txtobj[262])
   statusLim<-as.numeric(txtobj[264])
+
   nSampsMonitor<-as.numeric(txtobj[266])
-  doCheckProj<-as.character(txtobj[268])
+  # doCheckProj<-as.character(txtobj[268])
+
+  cwp_peakwidthL<-as.character(txtobj[268])
+  cwp_peakwidthR<-as.character(txtobj[270])
+  cwp_noise<-as.character(txtobj[272])
+  cwp_ppm<-as.character(txtobj[274])
+  cwp_mzdiff<-as.character(txtobj[276])
+  cwp_prefilterL<-as.character(txtobj[278])
+  cwp_prefilterR<-as.character(txtobj[280])
+  cwp_integrate<-as.character(txtobj[282])
+  cwp_snthresh<-as.character(txtobj[284])
 
 
   config <- list("dir" = dir,
@@ -314,7 +325,18 @@ readConfigFile <- function(configFilePath){
 
                  #nSamps to monitor
                  "nSampsMonitor"=nSampsMonitor,
-                 "doCheckProj"=doCheckProj
+                 "doCheckProj"=doCheckProj,
+
+                 #cwp parameters
+                 "cwp_peakwidthL"=cwp_peakwidthL,
+                 "cwp_peakwidthR"=cwp_peakwidthR,
+                 "cwp_noise"=cwp_noise,
+                 "cwp_ppm"=cwp_ppm,
+                 "cwp_mzdiff"=cwp_mzdiff,
+                 "cwp_prefilterL"=cwp_prefilterL,
+                 "cwp_prefilterR"=cwp_prefilterR,
+                 "cwp_integrate"=cwp_integrate,
+                 "cwp_snthresh"=cwp_snthresh
                )
 
   return(config)

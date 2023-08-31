@@ -263,29 +263,63 @@ configWizServer<-function(id,r){
         )
       })
 
-      ####Render 12####
-      output$render12<-renderUI({
-        req(r$configWiz$fileFormat)
+      ####Render 11####
+      output$render11<-renderUI({
+        req(r$configWiz$folderDepth)
 
         box(
-          width=6,
-          title="Step 12/13",
-
-          div(style = "height:130px;",
-              tags$b("Slack settings:"),
-              awesomeCheckbox(ns('checkSlack'), label="", value=FALSE),
-              uiOutput(ns('slackChoices'))
+          width=3,
+          title="Step 11/13",
+          div(style = "height:140px;",
+              tags$b("cwp parameters for XCMS peak picking (determined from old datasets):"),
+              br(),
+              column(
+                width=6,
+                numericInput(ns('cwp_peakwidthL'), label="Peakwidth low", 2)
+              ),
+              column(
+                width=6,
+                numericInput(ns('cwp_peakwidthR'), label="Peakwidth high", 2)
+              ),
+              column(
+                width=6,
+                numericInput(ns('cwp_noise'), label="Noise", 2)
+              ),
+              column(
+                width=6,
+                numericInput(ns('cwp_ppm'), label="PPM", 2)
+              ),
+              column(
+                width=6,
+                numericInput(ns('cwp_mzdiff'), label="mzdiff", 2)
+              ),
+              column(
+                width=6,
+                numericInput(ns('cwp_prefilterL'), label="Prefilter Low", 2)
+              ),
+              column(
+                width=6,
+                numericInput(ns('cwp_prefilterR'), label="Prefilter high", 2)
+              ),
+              column(
+                width=6,
+                numericInput(ns('cwp_integrate'), label="Intergrate", 2)
+              ),
+              column(
+                width=6,
+                numericInput(ns('cwp_snthresh'), label="SNThresh", 2)
+              )
           )
         )
       })
 
-      ####Render 11####
-      output$render11<-renderUI({
-        req(r$configWiz$fileFormat)
+      ####Render 12####
+      output$render12<-renderUI({
+        req(r$configWiz$cwp_peakwidthL)
 
         box(
           width=3,
-          title="Step 13/13",
+          title="Step 12/13",
 
           div(style = "height:130px;",
               column(
@@ -303,6 +337,22 @@ configWizServer<-function(id,r){
         )
       })
 
+      ####Render 13####
+      output$render13<-renderUI({
+        req(r$configWiz$fileFormat)
+
+        box(
+          width=6,
+          title="Step 13/13",
+
+          div(style = "height:130px;",
+              tags$b("Slack settings:"),
+              awesomeCheckbox(ns('checkSlack'), label="", value=FALSE),
+              uiOutput(ns('slackChoices'))
+          )
+        )
+      })
+
       ####Render slack stuff####
       output$slackChoices<-renderUI({
         if(!is.null(input$checkSlack)){
@@ -311,6 +361,7 @@ configWizServer<-function(id,r){
               width=12,
 
               tags$b("Format for channel input: #channelName"),
+              tags$br(),
 
               column(
                 width=6,
@@ -322,6 +373,7 @@ configWizServer<-function(id,r){
 
                 textInput(ns('hardLimChannel2'), label="Channel 2 name (optional, full log):", value=NULL)
               ),
+              tags$br(),
               column(
                 width=12,
 
@@ -331,6 +383,7 @@ configWizServer<-function(id,r){
           }
         }
       })
+
       ####Render config stuff####
       output$configChoices <- renderUI({
         if(!is.null(r$configWiz$configName)){
@@ -522,6 +575,25 @@ configWizServer<-function(id,r){
           r$configWiz$folderDepth<-input$folderDepth
           r$configWiz$fileFormat<-input$fileFormat
           r$configWiz$ltQCName<-input$ltQCName
+        }
+      )
+
+      ####Folder depth, file format and minimum file size (fileFormat)####
+      observeEvent(
+        ignoreNULL=TRUE,
+        eventExpr={
+          input$cwp_snthresh
+        },
+        handlerExpr={
+          r$configWiz$cwp_peakwidthL<-input$cwp_peakwidthL
+          r$configWiz$cwp_peakwidthR<-input$cwp_peakwidthR
+          r$configWiz$cwp_noise<-input$cwp_noise
+          r$configWiz$cwp_ppm<-input$cwp_ppm
+          r$configWiz$cwp_mzdiff<-input$cwp_mzdiff
+          r$configWiz$cwp_prefilterL<-input$cwp_prefilterL
+          r$configWiz$cwp_prefilterR<-input$cwp_prefilterR
+          r$configWiz$cwp_integrate<-input$cwp_integrate
+          r$configWiz$cwp_snthresh<-input$cwp_snthresh
         }
       )
 
@@ -877,7 +949,24 @@ configWizServer<-function(id,r){
             configOutput[264,]<-"0.2"
             configOutput[265,]<-"--nSampMonitor--"
             configOutput[266,]<-as.character(input$nSampsMonitor)
-            configOutput[267,]<-"" #For readLine not to freak out :)
+            configOutput[267,]<-"--cwp_peakwidthL--"
+            configOutput[268,]<-as.character(input$cwp_peakwidthL)
+            configOutput[269,]<-"--cwp_peakwidthR--"
+            configOutput[270,]<-as.character(input$cwp_peakwidthR)
+            configOutput[271,]<-"--cwp_noise--"
+            configOutput[272,]<-as.character(input$cwp_noise)
+            configOutput[273,]<-"--cwp_ppm--"
+            configOutput[274,]<-as.character(input$cwp_ppm)
+            configOutput[275,]<-"--cwp_mzdiff--"
+            configOutput[276,]<-as.character(input$cwp_mzdiff)
+            configOutput[277,]<-"--cwp_prefilterL--"
+            configOutput[278,]<-as.character(input$cwp_prefilterL)
+            configOutput[279,]<-"--cwp_prefilterR--"
+            configOutput[280,]<-as.character(input$cwp_prefilterR)
+            configOutput[281,]<-"--cwp_integrate--"
+            configOutput[282,]<-as.character(input$cwp_integrate)
+            configOutput[283,]<-"--cwp_snthresh--"
+            configOutput[284,]<-as.character(input$cwp_snthresh)
           })
 
 
