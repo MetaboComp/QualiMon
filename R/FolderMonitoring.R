@@ -28,7 +28,7 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
   minFileSize<-Config$minFileSize
   ltQCname<-Config$ltQCname
   fileFormat<-Config$fileFormat
-  projToCheck <- Config$doCheckProj
+  # projToCheck <- Config$doCheckProj
 
   #Check if raw file folder exists, otherwise exit function
   if (!file.exists(dir)){
