@@ -325,7 +325,7 @@ readConfigFile <- function(configFilePath){
 
                  #nSamps to monitor
                  "nSampsMonitor"=nSampsMonitor,
-                 "doCheckProj"=doCheckProj,
+                 # "doCheckProj"=doCheckProj,
 
                  #cwp parameters
                  "cwp_peakwidthL"=cwp_peakwidthL,
