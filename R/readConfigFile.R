@@ -158,15 +158,15 @@ readConfigFile <- function(configFilePath){
   nSampsMonitor<-as.numeric(txtobj[266])
   # doCheckProj<-as.character(txtobj[268])
 
-  cwp_peakwidthL<-as.character(txtobj[268])
-  cwp_peakwidthR<-as.character(txtobj[270])
-  cwp_noise<-as.character(txtobj[272])
-  cwp_ppm<-as.character(txtobj[274])
-  cwp_mzdiff<-as.character(txtobj[276])
-  cwp_prefilterL<-as.character(txtobj[278])
-  cwp_prefilterR<-as.character(txtobj[280])
-  cwp_integrate<-as.character(txtobj[282])
-  cwp_snthresh<-as.character(txtobj[284])
+  cwp_peakwidthL<-as.double(txtobj[268])
+  cwp_peakwidthR<-as.double(txtobj[270])
+  cwp_noise<-as.double(txtobj[272])
+  cwp_ppm<-as.double(txtobj[274])
+  cwp_mzdiff<-as.double(txtobj[276])
+  cwp_prefilterL<-as.double(txtobj[278])
+  cwp_prefilterR<-as.double(txtobj[280])
+  cwp_integrate<-as.double(txtobj[282])
+  cwp_snthresh<-as.double(txtobj[284])
 
 
   config <- list("dir" = dir,
