@@ -16,7 +16,7 @@
 #' @return Nothing
 
 #The specific instrument could be logged if inputed by user!
-checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName="", sampleMatrix="", dPPM=10, rtWin=30, alpha = 0.01, noCheck=c("blank", "cond", "CP"), Config=Config, slackOn=F, batch=F){
+checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName="", sampleMatrix="", dPPM=10, rtWin=30, alpha = 0.01, noCheck=c("blank", "cond", "CP"), Config, slackOn=F, batch=F){
 
   #Extracting the file name from the filePath
   fileName<-basename(filePath)
@@ -133,6 +133,13 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   }
 
   # Default centwave-parameters for xcms
+  print(is.null(Config$cwp_peakwidthL))
+  print(Config$cwp_peakwidthL)
+  print(Config$cwp_peakwidthR)
+  print(Config$cwp_noise)
+  print(Config$cwp_ppm)
+
+
   if(is.null(Config$cwp_peakwidthL)) {
     cwp <- CentWaveParam(peakwidth = c(4, 40),# Peak picking parameters for XCMS using centwave
                          noise = 300,
@@ -151,6 +158,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
                          snthresh = Config$cwp_snthresh)
   }
 
+    print(cwp)
 
 
   #######################################################
