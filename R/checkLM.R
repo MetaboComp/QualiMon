@@ -146,13 +146,14 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
 
 
   if(is.null(Config$cwp_peakwidthL)) {
-    cwp <- CentWaveParam(peakwidth = c(4, 40),# Peak picking parameters for XCMS using centwave
-                         noise = 300,
-                         ppm = 15,
-                         mzdiff = -0.0065,
-                         prefilter = c(3,1500),
+    cwp <- CentWaveParam(peakwidth = c(8, 50),# Peak picking parameters for XCMS using centwave
+                         noise = 1000,
+                         ppm = 20,
+                         mzdiff = -0.003,
+                         prefilter = c(3,1000),
                          integrate = 1,
                          snthresh = 10)
+
   } else {
     print(c(Config$cwp_peakwidthL, Config$cwp_peakwidthR))
     print(typeof(c(Config$cwp_peakwidthL, Config$cwp_peakwidthR)))
