@@ -60,7 +60,6 @@ checkLMBatch<-function(fileDir, projName, cwp=NULL, Config, sumFiles, progressBa
             rtWin=Config$rtWin,
             alpha=Config$alpha,
             noCheck=Config$noCheck,
-            cwp=cwp,
             Config=Config,
             slackOn=F,
             batch=T)
