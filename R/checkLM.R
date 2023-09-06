@@ -138,6 +138,11 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   print(Config$cwp_peakwidthR)
   print(Config$cwp_noise)
   print(Config$cwp_ppm)
+  print("-----")
+  print(typeof(Config$cwp_peakwidthL))
+  print(typeof(Config$cwp_peakwidthR))
+  print(typeof(Config$cwp_noise))
+  print(typeof(Config$cwp_ppm))
 
 
   if(is.null(Config$cwp_peakwidthL)) {
