@@ -133,30 +133,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   }
 
   # Default centwave-parameters for xcms
-  print(is.null(Config$cwp_peakwidthL))
-  print(Config$cwp_peakwidthL)
-  print(Config$cwp_peakwidthR)
-  print(Config$cwp_noise)
-  print(Config$cwp_ppm)
-  print("-----")
-  print(typeof(Config$cwp_peakwidthL))
-  print(typeof(Config$cwp_peakwidthR))
-  print(typeof(Config$cwp_noise))
-  print(typeof(Config$cwp_ppm))
-
-  peakwidthL = Config$cwp_peakwidthL
-  peakwidthR = Config$cwp_peakwidthR
-  noise = Config$cwp_noise
-  ppm = Config$cwp_ppm
-  mzdiff = Config$mzdiff
-  prefilterL = Config$prefilterL
-  prefilterR = Config$prefilterR
-  integrate = Config$cwp_integrate
-  snthresh = Config$cwp_snthresh
-
-
-
-  # if(is.null(Config$cwp_peakwidthL)) {
+  if(is.null(Config$cwp_peakwidthL)) {
     cwp <- CentWaveParam(peakwidth = c(8, 50),# Peak picking parameters for XCMS using centwave
                          noise = 1000,
                          ppm = 20,
@@ -164,21 +141,16 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
                          prefilter = c(3,1000),
                          integrate = 1,
                          snthresh = 10)
-    print(cwp)
 
-  # } else {
-    print(c(Config$cwp_peakwidthL, Config$cwp_peakwidthR))
-    print(typeof(c(Config$cwp_peakwidthL, Config$cwp_peakwidthR)))
-    cwp <- CentWaveParam(peakwidth = c(peakwidthL, peakwidthR),# Peak picking parameters for XCMS using centwave
-                         noise = noise,
-                         ppm = ppm,
-                         mzdiff = mzdiff,
-                         prefilter = c(prefilterL, prefilterR),
-                         integrate = integrate,
-                         snthresh = snthresh)
-  # }
-
-    print(cwp)
+  } else {
+    cwp <- CentWaveParam(peakwidth = c(Config$cwp_peakwidthL, Config$cwp_peakwidthR),# Peak picking parameters for XCMS using centwave
+                         noise = Config$cwp_noise,
+                         ppm = Config$cwp_ppm,
+                         mzdiff = Config$cwp_mzdiff,
+                         prefilter = c(Config$cwp_prefilterL, Config$cwp_prefilterR),
+                         integrate = Config$cwp_integrate,
+                         snthresh = Config$cwp_snthresh)
+  }
 
 
   #######################################################
