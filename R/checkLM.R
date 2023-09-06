@@ -145,7 +145,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   print(typeof(Config$cwp_ppm))
 
 
-  if(is.null(Config$cwp_peakwidthL)) {
+  # if(is.null(Config$cwp_peakwidthL)) {
     cwp <- CentWaveParam(peakwidth = c(8, 50),# Peak picking parameters for XCMS using centwave
                          noise = 1000,
                          ppm = 20,
@@ -153,8 +153,9 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
                          prefilter = c(3,1000),
                          integrate = 1,
                          snthresh = 10)
+    print(cwp)
 
-  } else {
+  # } else {
     print(c(Config$cwp_peakwidthL, Config$cwp_peakwidthR))
     print(typeof(c(Config$cwp_peakwidthL, Config$cwp_peakwidthR)))
     cwp <- CentWaveParam(peakwidth = c(Config$cwp_peakwidthL, Config$cwp_peakwidthR),# Peak picking parameters for XCMS using centwave
@@ -164,7 +165,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
                          prefilter = c(Config$prefilterL, Config$prefilterR),
                          integrate = Config$cwp_integrate,
                          snthresh = Config$cwp_snthresh)
-  }
+  # }
 
     print(cwp)
 
