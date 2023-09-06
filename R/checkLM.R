@@ -144,6 +144,17 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   print(typeof(Config$cwp_noise))
   print(typeof(Config$cwp_ppm))
 
+  peakwidthL = Config$cwp_peakwidthL
+  peakwidthR = Config$cwp_peakwidthR
+  noise = Config$cwp_noise
+  ppm = Config$cwp_ppm
+  mzdiff = Config$mzdiff
+  prefilterL = Config$prefilterL
+  prefilterR = Config$prefilterR
+  integrate = Config$cwp_integrate
+  snthresh = Config$cwp_snthresh
+
+
 
   # if(is.null(Config$cwp_peakwidthL)) {
     cwp <- CentWaveParam(peakwidth = c(8, 50),# Peak picking parameters for XCMS using centwave
@@ -158,13 +169,13 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   # } else {
     print(c(Config$cwp_peakwidthL, Config$cwp_peakwidthR))
     print(typeof(c(Config$cwp_peakwidthL, Config$cwp_peakwidthR)))
-    cwp <- CentWaveParam(peakwidth = c(Config$cwp_peakwidthL, Config$cwp_peakwidthR),# Peak picking parameters for XCMS using centwave
-                         noise = Config$cwp_noise,
-                         ppm = Config$cwp_ppm,
-                         mzdiff = Config$mzdiff,
-                         prefilter = c(Config$prefilterL, Config$prefilterR),
-                         integrate = Config$cwp_integrate,
-                         snthresh = Config$cwp_snthresh)
+    cwp <- CentWaveParam(peakwidth = c(peakwidthL, peakwidthR),# Peak picking parameters for XCMS using centwave
+                         noise = noise,
+                         ppm = ppm,
+                         mzdiff = mzdiff,
+                         prefilter = c(prefilterL, prefilterR),
+                         integrate = integrate,
+                         snthresh = snthresh)
   # }
 
     print(cwp)
