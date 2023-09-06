@@ -41,7 +41,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   testInj$instrument<-instrument
   testInj$projName<-projName
   testInj$matrix<-sampleMatrix
-  cwp<-NULL
+  # cwp<-NULL
 
   #Checking if a sample name has been submitted
   testInj$sampName<-paste(strsplit(fileName,"_")[[1]][1],"_",strsplit(fileName,"_")[[1]][5],sep="")

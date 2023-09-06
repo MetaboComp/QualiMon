@@ -50,7 +50,7 @@ checkLMBatch<-function(fileDir, projName, cwp=NULL, Config, sumFiles, progressBa
     } else {
       projSubmit <- projName
     }
-
+    print("Before checkLM")
     checkLM(filePath=paste0(fileDir,"\\",file),
             dbName=Config$dbName,
             projName=projSubmit,
