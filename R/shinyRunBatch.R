@@ -200,6 +200,8 @@ runBatchServer<-function(id,r){
               progressBatchRun <- AsyncProgress$new(message="Batch processing old files\n")
               r$runBatch$running <- T
               # processReady(NULL)
+              cfgFile <- readConfigFile(cfgFilePath)
+              print(cfgFile)
 
               future_promise(seed=NULL,{
                               # runBatch(cfgFilePath, choosenDirs, progressBatchRun, projName, sumFiles, progressMonitor=function(i) interBatch$execInterrupts())
