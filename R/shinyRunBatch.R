@@ -202,6 +202,7 @@ runBatchServer<-function(id,r){
               # processReady(NULL)
               cfgFile <- readConfigFile(cfgFilePath)
               print(cfgFile)
+              interBatch <- AsyncInterruptor$new()
 
               future_promise(seed=NULL,{
                               # runBatch(cfgFilePath, choosenDirs, progressBatchRun, projName, sumFiles, progressMonitor=function(i) interBatch$execInterrupts())
@@ -223,11 +224,18 @@ runBatchServer<-function(id,r){
                                    )
                                  )
                                  r$runBatch$running <- F
+
+                                 interBatch$destroy()
+                                 plan(sequential)
                                },
                                onFulfilled=function(){
                                  r$runBatch$running <- F
+
+                                 interBatch$destroy()
+                                 plan(sequential)
                                }
                              )
+              inter$interrupt("Error: Process has stopped")
               NULL
             }
           }
