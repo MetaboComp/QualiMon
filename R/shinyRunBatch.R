@@ -235,7 +235,7 @@ runBatchServer<-function(id,r){
                                  plan(sequential)
                                }
                              )
-              inter$interrupt("Error: Process has stopped")
+              interBatch$interrupt("Error: Process has stopped")
               NULL
             }
           }
