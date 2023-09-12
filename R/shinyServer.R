@@ -13,7 +13,6 @@ server <- function(input, output, session){
   r<-reactiveValues()
 
   plan(multisession)
-  options(future.globals.onReference = "error")
 
   r$configWiz<-reactiveValues()
   r$monitor<-reactiveValues()
