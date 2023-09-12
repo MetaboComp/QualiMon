@@ -209,7 +209,7 @@ runBatchServer<-function(id,r){
 
                               for(i in 1:length(choosenDirs)){
                                 progressBatchRun$set(detail=paste0("\n",basename(choosenDirs[i])))
-                                checkLMBatch(choosenDirs[i], projName, cwp=NULL, cfgFile, sumFiles, progressBatchRun, progressMonitor=function(i) inter$execInterrupts())
+                                checkLMBatch(choosenDirs[i], projName, cwp=NULL, cfgFile, sumFiles, progressBatchRun, progressMonitor=function(i) interBatch$execInterrupts())
                               }
                               progressBatchRun$close()
                              }) %>% then(
