@@ -162,21 +162,23 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
     # write.table("Running xcms & cpc on file...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
   }
 
+  invisible({
+    raw_data <- readMSData(files = filePath, mode = "onDisk") # Read in file -> MS
 
-  raw_data <- readMSData(files = filePath, mode = "onDisk") # Read in file -> MS
+    if(length(unique(raw_data@featureData@data$msLevel))==1 && unique(raw_data@featureData@data$msLevel)==2 && batch){
+      # write.table("File only containing MS2 data, performing no quality check", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+      return()
+    }
 
-  if(length(unique(raw_data@featureData@data$msLevel))==1 && unique(raw_data@featureData@data$msLevel)==2 && batch){
-    # write.table("File only containing MS2 data, performing no quality check", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
-    return()
-  }
+    gc (reset = TRUE)
+    xdata_cwp <- findChromPeaks(raw_data, param = cwp) # Actual peak picking
+    gc (reset = TRUE)
+    PeakInfo <- as.data.frame(chromPeaks(xdata_cwp)) # Extract picked peaks into data frame
+    gc (reset = TRUE)
+    LM_IPO_score <- IPOscore(xdata_cwp, isotopeIdentification ="IPO")[5] # Calculate IPO score
+    LM_TIC <- round(log(sum(tic(xdata_cwp))),3)
+  })
 
-  gc (reset = TRUE)
-  xdata_cwp <- findChromPeaks(raw_data, param = cwp) # Actual peak picking
-  gc (reset = TRUE)
-  PeakInfo <- as.data.frame(chromPeaks(xdata_cwp)) # Extract picked peaks into data frame
-  gc (reset = TRUE)
-  LM_IPO_score <- IPOscore(xdata_cwp, isotopeIdentification ="IPO")[5] # Calculate IPO score
-  LM_TIC <- round(log(sum(tic(xdata_cwp))),3)
   #Spec <- spectra(raw_data)
   #Noises=sapply(Spec, function (x) specNoise(spec = cbind(mz=x@mz, intensity=x@intensity))) #
   #LM_Noise <- mean(Noises)
@@ -222,7 +224,11 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   # #Checking if no LMs were detected or not and picking which peaks to hard-integrate based on this
   # LMs_not_found <- which(!(c(1:length(landmarks$LMID)) %in% position_in_LMDF))
   #
-  cpcObj<-characterize_xcms_peaklist(xdata_cwp, param=cpcProcParam(sel_peaks = c(position_in_sample)))
+  invisible({
+    cpcObj<-characterize_xcms_peaklist(xdata_cwp, param=cpcProcParam(sel_peaks = c(position_in_sample)))
+    cptObj<-cpt(cpcObj)[,c(1,2,15,16,14,19,20,27,26)]
+  })
+
   # cpc<-parsePeaklist(cpcObj)
   #
   # #Taking the last line of the CPC object and creating new lines
@@ -242,7 +248,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   # setParam(cpc) <- list(sel_peaks = c(getParam(cpc, "sel_peaks"), nrow(cpc@pt)))
 
 
-  cptObj<-cpt(cpcObj)[,c(1,2,15,16,14,19,20,27,26)]
+
   cptObj<-cbind(cptObj,(cptObj$sn*2/cptObj$height), (cptObj$tpkb-cptObj$fpkb+1))
   cptObj<-cptObj[,-c(8,9)]
   names(cptObj)<-c("ID","RT","Int","Height","FWHM","TF","SN","Noise","DataPoints")
