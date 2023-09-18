@@ -201,12 +201,12 @@ runBatchServer<-function(id,r){
               r$runBatch$running <- T
               # processReady(NULL)
               cfgFile <- readConfigFile(cfgFilePath)
-              print(cfgFile)
+              # print(cfgFile)
               interBatch <- AsyncInterruptor$new()
 
               future_promise(seed=NULL,{
                               # runBatch(cfgFilePath, choosenDirs, progressBatchRun, projName, sumFiles, progressMonitor=function(i) interBatch$execInterrupts())
-                              cfgFile <- readConfigFile(cfgFilePath)
+                              # cfgFile <- readConfigFile(cfgFilePath)
 
                               for(i in 1:length(choosenDirs)){
                                 progressBatchRun$set(detail=paste0("\n",basename(choosenDirs[i])))
