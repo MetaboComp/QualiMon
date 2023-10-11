@@ -31,8 +31,8 @@ initFolderMonitoring <- function(configFilePath, availableChromPols, progressMon
   # projToCheck <- Config$doCheckProj
 
   #Check if raw file folder exists, otherwise exit function
-  if (!file.exists(dir)){
-    if(!file.exists(paste0(dir,"/"))){
+  if (!dir.exists(dir)){
+    if(!dir.exists(paste0(dir,"/"))){
       print('Warning, file directory where raw files are generated does not exist!')
       return()
     }
