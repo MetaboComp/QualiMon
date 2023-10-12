@@ -743,6 +743,9 @@ examineDataServer<-function(id,r){
         req(r$examineData$chromPol)
         req(r$examineData$enoughSamples)
 
+        print(max(r$examineData$sampleLevelDT$sampleNumber))
+        print(r$examineData$sampleLevelDT)
+
         p <- plot_ly()
 
         #Setting limits based on chromPol
