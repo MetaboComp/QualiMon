@@ -745,6 +745,7 @@ examineDataServer<-function(id,r){
 
         print(max(r$examineData$sampleLevelDT$sampleNumber))
         print(r$examineData$sampleLevelDT)
+        print(r$examineData$sampleLevelDT$sampleNumber)
 
         p <- plot_ly()
 
@@ -801,11 +802,11 @@ examineDataServer<-function(id,r){
         }
         # Adding ablines based on chromPol of samples
         if(upper_abline != 0 && lower_abline != 0){
-          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), max(r$examineData$sampleLevelDT$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
+          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), nrow(r$examineData$sampleLevelDT)), y = upper_abline, type="scatter", mode="lines", #max(r$examineData$sampleLevelDT$sampleNumber)
                        line=list(color ="orange"),
                        name="Soft limit"
           )
-          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), max(r$examineData$sampleLevelDT$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
+          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), nrow(r$examineData$sampleLevelDT)), y = lower_abline, type="scatter", mode="lines", #max(r$examineData$sampleLevelDT$sampleNumber)
                        line=list(color ="red"),
                        name="Hard limit"
           )
