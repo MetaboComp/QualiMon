@@ -282,6 +282,8 @@ examineDataServer<-function(id,r){
             startNumb <- 1
           }
 
+          print("Here")
+
           dcastObj<-dcast(as.data.table(dbGetQuery(conn,s1)),
                           sampleNumber~sampleIter,
                           value.var = 'status')[c(startNumb:nCols+2), (nCols-ifelse(toRemove==0, (nCols-2), (toRemove-1))):(nCols+1)]
@@ -290,6 +292,8 @@ examineDataServer<-function(id,r){
           if(ncol(dcastObj)==1){
             dcastObj<-cbind(dcastObj,c(NA,NA,NA))
           }
+
+          print("Here2")
 
           rownames(dcastObj)<-r$examineData$sampleLevelDT$name[which(r$examineData$sampleLevelDT$sampleNumber %in% toShow)]
           showNotification("Rendering Status Plot.\n Can take up to 1 minute.")
@@ -743,9 +747,9 @@ examineDataServer<-function(id,r){
         req(r$examineData$chromPol)
         req(r$examineData$enoughSamples)
 
-        print(max(r$examineData$sampleLevelDT$sampleNumber))
-        print(r$examineData$sampleLevelDT)
-        print(r$examineData$sampleLevelDT$sampleNumber)
+        # print(max(r$examineData$sampleLevelDT$sampleNumber))
+        # print(r$examineData$sampleLevelDT)
+        # print(r$examineData$sampleLevelDT$sampleNumber)
 
         p <- plot_ly()
 
@@ -879,11 +883,11 @@ examineDataServer<-function(id,r){
         }
         # Adding ablines based on chromPol of samples
         if(upper_abline != 0 && lower_abline != 0){
-          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), max(r$examineData$sampleLevelDT$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
+          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), nrow(r$examineData$sampleLevelDT)), y = upper_abline, type="scatter", mode="lines", #max(r$examineData$sampleLevelDT$sampleNumber)
                        line=list(color ="orange"),
                        name="Soft limit"
           )
-          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), max(r$examineData$sampleLevelDT$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
+          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), nrow(r$examineData$sampleLevelDT)), y = lower_abline, type="scatter", mode="lines", #max(r$examineData$sampleLevelDT$sampleNumber)
                        line=list(color ="red"),
                        name="Hard limit"
           )
@@ -956,11 +960,11 @@ examineDataServer<-function(id,r){
         }
         # Adding ablines based on chromPol of samples
         if(upper_abline != 0 && lower_abline != 0){
-          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), max(r$examineData$sampleLevelDT$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
+          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), nrow(r$examineData$sampleLevelDT)), y = upper_abline, type="scatter", mode="lines", #max(r$examineData$sampleLevelDT$sampleNumber)
                        line=list(color ="orange"),
                        name="Soft limit"
           )
-          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), max(r$examineData$sampleLevelDT$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
+          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), nrow(r$examineData$sampleLevelDT)), y = lower_abline, type="scatter", mode="lines", #max(r$examineData$sampleLevelDT$sampleNumber)
                        line=list(color ="red"),
                        name="Hard limit"
           )
@@ -1041,11 +1045,11 @@ examineDataServer<-function(id,r){
         }
         # Adding ablines based on chromPol of samples
         if(upper_abline != 0 && lower_abline != 0){
-          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), max(r$examineData$sampleLevelDT$sampleNumber)), y = upper_abline, type="scatter", mode="lines",
+          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), nrow(r$examineData$sampleLevelDT)), y = upper_abline, type="scatter", mode="lines", #max(r$examineData$sampleLevelDT$sampleNumber)
                        line=list(color ="orange"),
                        name="Soft limit"
           )
-          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), max(r$examineData$sampleLevelDT$sampleNumber)), y = lower_abline, type="scatter", mode="lines",
+          p<-add_trace(p, x=c(min(r$examineData$sampleLevelDT$sampleNumber), nrow(r$examineData$sampleLevelDT)), y = lower_abline, type="scatter", mode="lines", #max(r$examineData$sampleLevelDT$sampleNumber)
                        line=list(color ="red"),
                        name="Hard limit"
           )
