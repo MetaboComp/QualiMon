@@ -162,21 +162,28 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
     # write.table("Running xcms & cpc on file...", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
   }
 
-  invisible({
-    raw_data <- readMSData(files = filePath, mode = "onDisk") # Read in file -> MS
+  #tryCatch to avoid whole app shutting down when one sample is somehow shitty / mzML conversion fails
+  resultTryCatch <- tryCatch({
+    invisible({
+      raw_data <- readMSData(files = filePath, mode = "onDisk") # Read in file -> MS
 
-    if(length(unique(raw_data@featureData@data$msLevel))==1 && unique(raw_data@featureData@data$msLevel)==2 && batch){
-      # write.table("File only containing MS2 data, performing no quality check", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
-      return()
-    }
+      if(length(unique(raw_data@featureData@data$msLevel))==1 && unique(raw_data@featureData@data$msLevel)==2 && batch){
+        # write.table("File only containing MS2 data, performing no quality check", "data/status/status.txt", sep=";", row.names = FALSE, col.names = FALSE)
+        return()
+      }
 
-    gc (reset = TRUE)
-    xdata_cwp <- findChromPeaks(raw_data, param = cwp) # Actual peak picking
-    gc (reset = TRUE)
-    PeakInfo <- as.data.frame(chromPeaks(xdata_cwp)) # Extract picked peaks into data frame
-    gc (reset = TRUE)
-    LM_IPO_score <- IPOscore(xdata_cwp, isotopeIdentification ="IPO")[5] # Calculate IPO score
-    LM_TIC <- round(log(sum(tic(xdata_cwp))),3)
+      gc (reset = TRUE)
+      xdata_cwp <- findChromPeaks(raw_data, param = cwp) # Actual peak picking
+      gc (reset = TRUE)
+      PeakInfo <- as.data.frame(chromPeaks(xdata_cwp)) # Extract picked peaks into data frame
+      gc (reset = TRUE)
+      LM_IPO_score <- IPOscore(xdata_cwp, isotopeIdentification ="IPO")[5] # Calculate IPO score
+      LM_TIC <- round(log(sum(tic(xdata_cwp))),3)
+    })
+  }, error = function(err) {
+    print(paste0("Couldn't read sample: ", fileName))
+    print("properly. Skipping it and continuing file monitoring.")
+    return()
   })
 
   #Spec <- spectra(raw_data)
