@@ -231,10 +231,10 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   # #Checking if no LMs were detected or not and picking which peaks to hard-integrate based on this
   # LMs_not_found <- which(!(c(1:length(landmarks$LMID)) %in% position_in_LMDF))
   #
-  invisible({
+  sink("NUL")
     cpcObj<-characterize_xcms_peaklist(xdata_cwp, param=cpcProcParam(sel_peaks = c(position_in_sample)))
     cptObj<-cpt(cpcObj)[,c(1,2,15,16,14,19,20,27,26)]
-  })
+  sink()
 
   # cpc<-parsePeaklist(cpcObj)
   #
@@ -255,7 +255,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   # setParam(cpc) <- list(sel_peaks = c(getParam(cpc, "sel_peaks"), nrow(cpc@pt)))
 
 
-
+  
   cptObj<-cbind(cptObj,(cptObj$sn*2/cptObj$height), (cptObj$tpkb-cptObj$fpkb+1))
   cptObj<-cptObj[,-c(8,9)]
   names(cptObj)<-c("ID","RT","Int","Height","FWHM","TF","SN","Noise","DataPoints")
