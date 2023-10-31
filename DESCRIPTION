@@ -35,7 +35,8 @@ Imports:
     ipc,
     MSnbase,
     IPO,
-    fontawesome
+    fontawesome,
+    cpc
 Remotes:
     krispir/cpc
 RoxygenNote: 7.2.1
