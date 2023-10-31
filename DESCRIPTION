@@ -27,7 +27,6 @@ Imports:
     openxlsx,
     slackr,
     promises,
-    cpc,
     heatmaply,
     magrittr,
     stats,
@@ -37,5 +36,6 @@ Imports:
     MSnbase,
     IPO,
     fontawesome
-Remotes: krispir/cpc
+Remotes: 
+- krispir/cpc
 RoxygenNote: 7.2.1
