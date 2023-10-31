@@ -8,6 +8,7 @@ Associated manuscript 'Continuous Quality Monitoring for Non-target MS-based Ana
 ### 1. Installation
 ```
 if (!require("remotes", quietly = TRUE)) install.packages("remotes")
+options(timeout=999999)
 remotes::install_github("MetaboComp/QualiMon")
 ```
 
