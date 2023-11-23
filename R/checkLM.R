@@ -163,7 +163,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   }
 
   #tryCatch to avoid whole app shutting down when one sample is somehow shitty / mzML conversion fails
-  resultTryCatch <- tryCatch({
+  tryCatch({ #resultTryCatch <- 
     invisible({
       raw_data <- readMSData(files = filePath, mode = "onDisk") # Read in file -> MS
 
