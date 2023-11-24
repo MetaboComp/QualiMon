@@ -179,7 +179,7 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
       gc (reset = TRUE)
       LM_IPO_score <- IPOscore(xdata_cwp, isotopeIdentification ="IPO")[5] # Calculate IPO score
       LM_TIC <- round(log(sum(tic(xdata_cwp))),3)
-      return("No error")
+      "No error"
     })
   }, error = function(err) {
     print(paste0("Couldn't read sample: ", fileName))
