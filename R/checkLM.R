@@ -47,13 +47,13 @@ checkLM <- function(filePath, dbName="NameOfDB.db", instrument="QTOF", projName=
   testInj$sampName<-paste(strsplit(fileName,"_")[[1]][1],"_",strsplit(fileName,"_")[[1]][5],sep="")
 
   #Combining chrom and pol into one statement
-  if(strsplit(fileName,"_")[[1]][3]=="RP" && strsplit(fileName,"_")[[1]][4]=="POS"){
+  if(grepl("RP", strsplit(fileName,"_")[[1]][3], ignore.case=T) && grepl("POS",strsplit(fileName,"_")[[1]][4], ignore.case=T)){
     testInj$chromPol<-"RP"
-  } else if(strsplit(fileName,"_")[[1]][3]=="RP" && strsplit(fileName,"_")[[1]][4]=="NEG"){
+  } else if(grepl("RP", strsplit(fileName,"_")[[1]][3], ignore.case=T) && grepl("NEG",strsplit(fileName,"_")[[1]][4], ignore.case=T)){
     testInj$chromPol<-"RN"
-  } else if(strsplit(fileName,"_")[[1]][3]=="HILIC" && strsplit(fileName,"_")[[1]][4]=="POS"){
+  } else if(grepl("HILIC", strsplit(fileName,"_")[[1]][3], ignore.case=T) && grepl("POS",strsplit(fileName,"_")[[1]][4], ignore.case=T)){
     testInj$chromPol<-"HP"
-  } else if(strsplit(fileName,"_")[[1]][3]=="HILIC" && strsplit(fileName,"_")[[1]][4]=="NEG"){
+  } else if(grepl("HILIC", strsplit(fileName,"_")[[1]][3], ignore.case=T) && grepl("NEG",strsplit(fileName,"_")[[1]][4], ignore.case=T)){
     testInj$chromPol<-"HN"
   }
 
