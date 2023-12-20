@@ -1345,6 +1345,11 @@ monitorServer<-function(id,r){
         req(dataAvailable())
 
         if(file.exists(r$configWiz$config$dbName) && r$monitor$projName!=""){
+          createViewQuery <- sprintf("CREATE VIEW IF NOT EXISTS %s AS SELECT injections.name, injections.chromPol, injections.batchWeek, samples.matrix, samples.projName, samples.type, lmQuality.* FROM lmQuality, samples, injections WHERE injections.injID=lmQuality.injID AND samples.sampID=injections.sampID", #ON injections.injID=lmQuality.injID WHERE samples.sampID=injections.sampID
+                                     paste0("QTable_", r$configWiz$config$sampleMatrix))
+
+          createViewQuery2 <- sprintf("CREATE VIEW IF NOT EXISTS %s AS SELECT DISTINCT injections.name, injections.nLMs, injections.nPeaks, injections.TIC, injections.IPOscore, lmQuality.sampleNumber, injections.batchWeek, injections.chromPol, samples.projName, samples.type FROM lmQuality, samples, injections WHERE injections.injID=lmQuality.injID AND samples.sampID=injections.sampID", #ON injections.injID=lmQuality.injID WHERE samples.sampID=injections.sampID
+                                      paste0("QTableDistinct_", r$configWiz$config$sampleMatrix))
 
           if(r$monitor$projName != "All samples"){
             s3 <- sprintf("SELECT MAX(sampleIter) FROM [%s] q WHERE q.chromPol='%s' AND q.projName='%s' AND q.type='%s'",
