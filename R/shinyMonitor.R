@@ -1150,16 +1150,27 @@ monitorServer<-function(id,r){
             fileSelMonitor<-parseFilePaths(r$configWiz$roots,input$preConfig)
             r$configWiz$preConfig<-as.character(fileSelMonitor$datapath)
             r$configWiz$config<-readConfigFile(r$configWiz$preConfig)
+
+
             #Setting firstPass to NULL to make sure that DB not continously read if checkLM isn't running
             firstPass(NULL)
 
             #Checking if file exists
             if(file.exists(r$configWiz$config$dbName)){
+              #Adding QTable for the matrix
+              createViewQuery <- sprintf("CREATE VIEW IF NOT EXISTS %s AS SELECT injections.name, injections.chromPol, injections.batchWeek, samples.matrix, samples.projName, samples.type, lmQuality.* FROM lmQuality, samples, injections WHERE injections.injID=lmQuality.injID AND samples.sampID=injections.sampID", #ON injections.injID=lmQuality.injID WHERE samples.sampID=injections.sampID
+                                         paste0("QTable_", r$configWiz$config$sampleMatrix))
+
+              createViewQuery2 <- sprintf("CREATE VIEW IF NOT EXISTS %s AS SELECT DISTINCT injections.name, injections.nLMs, injections.nPeaks, injections.TIC, injections.IPOscore, lmQuality.sampleNumber, injections.batchWeek, injections.chromPol, samples.projName, samples.type FROM lmQuality, samples, injections WHERE injections.injID=lmQuality.injID AND samples.sampID=injections.sampID", #ON injections.injID=lmQuality.injID WHERE samples.sampID=injections.sampID
+                                          paste0("QTableDistinct_", r$configWiz$config$sampleMatrix))
+
               #Checking if LaMas available for all chromPols, if not warn user that samples will be disregarded
               conn1 <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
               sqliteSetBusyHandler(conn1, 40000)
               s1 <- sprintf("SELECT DISTINCT chromPol FROM landmarks")
               r$monitor$availableChromPols <- unlist(dbGetQuery(conn1, s1))
+              dbExecute(conn1, createViewQuery)
+              dbExecute(conn1, createViewQuery2)
               dbDisconnect(conn1)
 
               if(length(r$monitor$availableChromPols) < 4){
@@ -1306,36 +1317,36 @@ monitorServer<-function(id,r){
             # conn2 <- dbConnect(RSQLite::SQLite(), r$configWiz$config$dbName)
             # sqliteSetBusyHandler(conn2, 40000)
             # tableExists <- as.integer(dbGetQuery(conn2, s1))
-#
-#             #If there is at least one sample of the matrix in the DB
-#             if(tableExists > 0){
-#               #Collecting project names present
-#               s2 <- sprintf("SELECT DISTINCT projName FROM [%s]", # q WHERE q.chromPol='%s'
-#                             paste0("QTableDistinct_",r$configWiz$config$sampleMatrix))#, #sampleMatrix
-#               # r$monitor$chromPolFormat,
-#               # r$monitor$sampType) #chromPol
-#               # isolate({
-#               #   r$monitor$projects <- unlist(dbGetQuery(conn, s2))
-#               #   names(r$monitor$projects) <- NULL
-#               # })
-#
-#               #Collecting number of samples
-#               s3 <- sprintf("SELECT count(*) FROM [%s]",
-#                             paste0("QTableDistinct_",
-#                                    r$configWiz$config$sampleMatrix))
-#               nSampsTrigger <- as.integer(dbGetQuery(conn2, s3))
-                nSampsTrigger <- file.info(r$configWiz$config$dbName)$size
-#               firstPass(1)
-#
-#               #If there is a larger number of samples than previously
-              if(nSampsTrigger > oldNSamps() || !is.null(changedMode())){
-                oldNSamps(nSampsTrigger)
-                dataAvailable(1)
-                changedMode(NULL)
-              }
-#             }
-#
-#             dbDisconnect(conn2)
+            #
+            #             #If there is at least one sample of the matrix in the DB
+            #             if(tableExists > 0){
+            #               #Collecting project names present
+            #               s2 <- sprintf("SELECT DISTINCT projName FROM [%s]", # q WHERE q.chromPol='%s'
+            #                             paste0("QTableDistinct_",r$configWiz$config$sampleMatrix))#, #sampleMatrix
+            #               # r$monitor$chromPolFormat,
+            #               # r$monitor$sampType) #chromPol
+            #               # isolate({
+            #               #   r$monitor$projects <- unlist(dbGetQuery(conn, s2))
+            #               #   names(r$monitor$projects) <- NULL
+            #               # })
+            #
+            #               #Collecting number of samples
+            #               s3 <- sprintf("SELECT count(*) FROM [%s]",
+            #                             paste0("QTableDistinct_",
+            #                                    r$configWiz$config$sampleMatrix))
+            #               nSampsTrigger <- as.integer(dbGetQuery(conn2, s3))
+            nSampsTrigger <- file.info(r$configWiz$config$dbName)$size
+            #               firstPass(1)
+            #
+            #               #If there is a larger number of samples than previously
+            if(nSampsTrigger > oldNSamps() || !is.null(changedMode())){
+              oldNSamps(nSampsTrigger)
+              dataAvailable(1)
+              changedMode(NULL)
+            }
+            #             }
+            #
+            #             dbDisconnect(conn2)
           }
         })
       })
@@ -1344,12 +1355,9 @@ monitorServer<-function(id,r){
       observe({
         req(dataAvailable())
 
-        if(file.exists(r$configWiz$config$dbName) && r$monitor$projName!=""){
-          createViewQuery <- sprintf("CREATE VIEW IF NOT EXISTS %s AS SELECT injections.name, injections.chromPol, injections.batchWeek, samples.matrix, samples.projName, samples.type, lmQuality.* FROM lmQuality, samples, injections WHERE injections.injID=lmQuality.injID AND samples.sampID=injections.sampID", #ON injections.injID=lmQuality.injID WHERE samples.sampID=injections.sampID
-                                     paste0("QTable_", r$configWiz$config$sampleMatrix))
+        print(r$configWiz$config$sampleMatrix)
 
-          createViewQuery2 <- sprintf("CREATE VIEW IF NOT EXISTS %s AS SELECT DISTINCT injections.name, injections.nLMs, injections.nPeaks, injections.TIC, injections.IPOscore, lmQuality.sampleNumber, injections.batchWeek, injections.chromPol, samples.projName, samples.type FROM lmQuality, samples, injections WHERE injections.injID=lmQuality.injID AND samples.sampID=injections.sampID", #ON injections.injID=lmQuality.injID WHERE samples.sampID=injections.sampID
-                                      paste0("QTableDistinct_", r$configWiz$config$sampleMatrix))
+        if(file.exists(r$configWiz$config$dbName) && r$monitor$projName!=""){
 
           if(r$monitor$projName != "All samples"){
             s3 <- sprintf("SELECT MAX(sampleIter) FROM [%s] q WHERE q.chromPol='%s' AND q.projName='%s' AND q.type='%s'",
@@ -1368,7 +1376,9 @@ monitorServer<-function(id,r){
           #Checking moving window size and number of samples
           nCols <- as.integer(dbGetQuery(conn3, s3))
 
-          if(nCols > r$configWiz$config$nSampsMonitor){
+          print(nCols)
+
+          if(!is.na(nCols) && nCols > r$configWiz$config$nSampsMonitor){
             startNumb <- nCols-r$configWiz$config$nSampsMonitor
           } else {
             startNumb <- 0
