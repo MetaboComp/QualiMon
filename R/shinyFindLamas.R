@@ -611,11 +611,25 @@ findLamasServer<-function(id,r){
           input$dbSubmitLamasTo
         },
         handlerExpr = {
+          print("Here")
           shinyFileChoose(input,'dbSubmitLamasTo', roots=c(r$configWiz$roots, wd="."), filetypes=c('','db'), session=session)
 
-          if(!is.null(input$dbSubmitLamasTo) && grepl(".db",as.character(input$dbSubmitLamasTo))){
-            fileSelMonitor <- parseFilePaths(r$configWiz$roots,input$dbSubmitLamasTo)
-            r$findLamas$dbSubmitLamasTo <- as.character(fileSelMonitor$datapath)
+          # if(!is.null(input$dbSubmitLamasTo) && grepl(".db",as.character(input$dbSubmitLamasTo))){
+          #   fileSelMonitor <- parseFilePaths(r$configWiz$roots,input$dbSubmitLamasTo)
+          #   r$findLamas$dbSubmitLamasTo <- as.character(fileSelMonitor$datapath)
+          # }
+
+          if(!is.null(input$dbSubmitLamasTo) && length(grep(".db",as.character(input$dbSubmitLamasTo)))>0){
+
+            if(input$dbSubmitLamasTo$root == "wd"){
+              fileSelMonitor <- list()
+              fileSelMonitor$datapath <- paste0(getwd(),"/",input$dbSubmitLamasTo$files$`0`[[2]])
+            } else {
+              fileSelMonitor<-parseFilePaths(r$configWiz$roots,input$dbSubmitLamasTo)
+            }
+
+            r$findLamas$dbSubmitLamasTo<-as.character(fileSelMonitor$datapath)
+
           }
         }
       )
