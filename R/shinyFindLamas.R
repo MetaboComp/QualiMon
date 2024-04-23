@@ -668,9 +668,11 @@ findLamasServer<-function(id,r){
         },
         handlerExpr={
           req(input$submitLamas)
+          print("Submit LaMas")
+          print(r$findLamas$dbSubmitLamasTo)
           if(grepl(".db",r$findLamas$dbSubmitLamasTo)){
             #Double checking if LaMas already present and asking user to confirm that they want to submit new ones
-            if(dim(fetchLM(r$findLamas$dbSubmitLamasTo,r$findLamas$chromPol))[1]>0){
+            if(!is.null(dim(fetchLM(r$findLamas$dbSubmitLamasTo,r$findLamas$chromPol))[1]) && dim(fetchLM(r$findLamas$dbSubmitLamasTo,r$findLamas$chromPol))[1]>0){
               showModal(lamasInDBModal())
             } else {
               nrowToSubmit <- nrow(r$findLamas$outObj[[1]][[as.double(r$findLamas$lamaSetToSubmit)]])
