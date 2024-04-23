@@ -784,7 +784,7 @@ findLamasServer<-function(id,r){
         handlerExpr={
           r$findLamas$startOptimize <- 1
 
-          if(any(!(grepl(r$findLamas$split, colnames(readRDS(fileSelMonitor)))))){
+          if(any(!(grepl(r$findLamas$split, colnames(readRDS(r$findLamas$preFCPfilepath)))))){
             showModal(
               modalDialog(
                 title="Wrong format of .rds!",
