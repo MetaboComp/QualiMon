@@ -819,6 +819,9 @@ findLamasServer<-function(id,r){
           input$createDBButton
         },
         handlerExpr={
+          print(r$findLamas$DBName)
+          print(r$findLamas$DBDir)
+
           if(!file.exists(paste0(r$findLamas$DBDir,"\\",r$findLamas$DBName))){
             buildDB(r$findLamas$DBName,r$findLamas$DBDir)
             showModal(
