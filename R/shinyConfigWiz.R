@@ -948,7 +948,7 @@ configWizServer<-function(id,r){
             configOutput[263,]<-"--StatusLim--"
             configOutput[264,]<-"0.2"
             configOutput[265,]<-"--nSampMonitor--"
-            configOutput[266,]<-as.character(input$nSampsMonitor)
+            configOutput[266,]<-as.character(input$nSampMonitor)
             configOutput[267,]<-"--cwp_peakwidthL--"
             configOutput[268,]<-as.character(input$cwp_peakwidthL)
             configOutput[269,]<-"--cwp_peakwidthR--"
