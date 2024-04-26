@@ -740,14 +740,6 @@ examineDataServer<-function(id,r){
       ###################
       ####nPeaks plot####
       output$plotPeaks<-renderPlotly({
-        print("In nPeaks")
-        print(r$examineData$config)
-        print(input$sampType)
-        print(input$chromPol)
-        print(r$examineData$sampType)
-        print(r$examineData$chromPol)
-        print(r$examineData$enoughSamples)
-
         req(r$examineData$config)
         req(input$sampType)
         req(input$chromPol)

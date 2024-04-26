@@ -1023,7 +1023,27 @@ findLimitsServer<-function(id,r){
             configOutput[262,]<-ifelse(input$nLaMaCheckBox, 1, 0)
             configOutput[263,]<-"--StatusLim--"
             configOutput[264,]<-input$StatusLimitInput
-            configOutput[265,]<-"" #For readLine not to freak out :)
+            configOutput[265,]<-"--nSampMonitor--"
+            configOutput[266,]<-r$findLimits$Config$nSampsMonitor
+            configOutput[267,]<-"--cwp_peakwidthL--"
+            configOutput[268,]<-r$findLimits$Config$cwp_peakWidthL
+            configOutput[269,]<-"--cwp_peakwidthR--"
+            configOutput[270,]<-r$findLimits$Config$cwp_peakWidthR
+            configOutput[271,]<-"--cwp_noise--"
+            configOutput[272,]<-r$findLimits$Config$cwp_noise
+            configOutput[273,]<-"--cwp_ppm--"
+            configOutput[274,]<-r$findLimits$Config$cwp_ppm
+            configOutput[275,]<-"--cwp_mzdiff--"
+            configOutput[276,]<-r$findLimits$Config$cwp_mzdiff
+            configOutput[277,]<-"--cwp_prefilterL--"
+            configOutput[278,]<-r$findLimits$Config$cwp_prefilterL
+            configOutput[279,]<-"--cwp_prefilterR--"
+            configOutput[280,]<-r$findLimits$Config$cwp_prefilterR
+            configOutput[281,]<-"--cwp_integrate--"
+            configOutput[282,]<-r$findLimits$Config$cwp_integrate
+            configOutput[283,]<-"--cwp_snthresh--"
+            configOutput[284,]<-r$findLimits$Config$cwp_snthresh
+            configOutput[285,]<-"" #For readLine not to freak out :)
 
             r$findLimits$StatusLimitInput <- input$StatusLimitInput
 
