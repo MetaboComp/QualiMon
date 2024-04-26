@@ -718,6 +718,10 @@ findLimitsServer<-function(id,r){
           isolate({
             suppressWarnings(
               for(i in 1:length(r$findLimits$Config)){
+                print(i)
+                if(length(is.na(r$findLimits$Config[[i]]))>1){
+                  print("ERROR ERROR ERROR")
+                }
                 if(is.na(r$findLimits$Config[[i]])){
                   r$findLimits$Config[[i]] <- 0
                 }
